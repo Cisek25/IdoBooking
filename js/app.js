@@ -1132,35 +1132,48 @@ ${scripts}`;
 }
 
 function generateScriptsFile() {
+    const effect = appState.effectsSettings.atmosphericEffect || 'none';
+
     return `<!-- ============================================
      ${appState.globalSettings.propertyName || 'Nazwa Obiektu'} - SCRIPTS
      
      Wklej w panelu CMS → Koniec sekcji body
      ============================================ -->
 
+<!-- External Effects Script -->
+<script src="https://cisek25.github.io/IdoBooking/js/visual-effects.js"></script>
+
 <script>
-// Lightbox - powiększanie zdjęć w galerii
-function openLightbox(element) {
-    var img = element.querySelector('img');
-    var lightbox = document.getElementById('lightbox');
-    var lightboxImg = document.getElementById('lightbox-img');
-    lightboxImg.src = img.src;
-    lightbox.classList.add('active');
-    document.body.style.overflow = 'hidden';
-}
+document.addEventListener('DOMContentLoaded', function() {
+    // 1. Initialize Atmospheric Effects
+    if (window.VisualEffects && '${effect}' !== 'none') {
+        // Create a wrapper for effects if needed, or attach to body
+        VisualEffects.start('${effect}', document.body);
+    }
 
-function closeLightbox() {
-    var lightbox = document.getElementById('lightbox');
-    lightbox.classList.remove('active');
-    document.body.style.overflow = '';
-}
-
-// Zamknij lightbox klawiszem Escape
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') closeLightbox();
+    // 2. Gallery Lightbox
+    window.openLightbox = function(element) {
+        var img = element.querySelector('img');
+        var lightbox = document.getElementById('lightbox');
+        var lightboxImg = document.getElementById('lightbox-img');
+        if(lightbox && lightboxImg) {
+            lightboxImg.src = img.src;
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+    };
+    
+    window.closeLightbox = function() {
+        var lightbox = document.getElementById('lightbox');
+        if(lightbox) {
+            lightbox.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    };
 });
-<\/script>`;
+</script>`;
 }
+
 
 // ============================================
 // EXPORT FUNCTIONS
