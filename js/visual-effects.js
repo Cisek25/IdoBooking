@@ -104,6 +104,9 @@ const VisualEffects = {
             case 'particles':
                 this.initParticles();
                 break;
+            case 'wind':
+                this.initWind();
+                break;
         }
 
         this.animate();
@@ -141,6 +144,9 @@ const VisualEffects = {
                 break;
             case 'particles':
                 this.drawParticles();
+                break;
+            case 'wind':
+                this.drawWind();
                 break;
         }
 
@@ -415,6 +421,65 @@ const VisualEffects = {
             this.ctx.strokeStyle = rayGradient;
             this.ctx.lineCap = 'round';
             this.ctx.stroke();
+        });
+    },
+
+    // ============================================
+    // WIND EFFECT 🌬️
+    // ============================================
+    initWind() {
+        this.particles = [];
+        const baseCount = 50;
+        const count = Math.floor(baseCount * this.intensity);
+
+        for (let i = 0; i < count; i++) {
+            this.prepareWindParticle({});
+        }
+    },
+
+    prepareWindParticle(p) {
+        p.x = Math.random() * this.canvas.width;
+        p.y = Math.random() * this.canvas.height;
+        p.length = Math.random() * 100 + 50;
+        p.speed = (Math.random() * 15 + 10) * (0.8 + this.intensity * 0.2);
+        p.opacity = Math.random() * 0.2 + 0.05;
+        p.thickness = Math.random() > 0.9 ? 2 : 1; // Occasional thicker lines
+
+        // Start randomly offscreen left sometimes
+        if (Math.random() > 0.5) p.x = -p.length;
+
+        return p;
+    },
+
+    drawWind() {
+        this.particles.forEach(p => {
+            if (!p.x) this.prepareWindParticle(p);
+
+            const gradient = this.ctx.createLinearGradient(p.x, p.y, p.x + p.length, p.y);
+            gradient.addColorStop(0, `rgba(255, 255, 255, 0)`);
+            gradient.addColorStop(0.5, `rgba(255, 255, 255, ${p.opacity})`);
+            gradient.addColorStop(1, `rgba(255, 255, 255, 0)`);
+
+            this.ctx.fillStyle = gradient; // Using fillRect for lines usually better for performance than stroke with gradient sometimes, but stroke is fine.
+            // Let's use stroke for lines
+            this.ctx.beginPath();
+            this.ctx.moveTo(p.x, p.y);
+            this.ctx.lineTo(p.x + p.length, p.y);
+            this.ctx.strokeStyle = gradient;
+            this.ctx.lineWidth = p.thickness;
+            this.ctx.stroke();
+
+            // Update
+            p.x += p.speed;
+
+            // Simulation of wind gusts - slight Y movement
+            p.y += Math.sin(Date.now() / 500 + p.x / 100) * 0.5;
+
+            // Reset
+            if (p.x > this.canvas.width) {
+                p.x = -p.length - Math.random() * 100;
+                p.y = Math.random() * this.canvas.height;
+            }
         });
     },
 
