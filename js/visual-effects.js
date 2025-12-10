@@ -8,6 +8,7 @@ const VisualEffects = {
     ctx: null,
     animationId: null,
     particles: [],
+    intensity: 1.0, // Default intensity
 
     // Initialize canvas for effects
     init(container) {
@@ -52,6 +53,18 @@ const VisualEffects = {
         this.ctx = null;
         this.particles = [];
         this.activeEffect = null;
+        // Don't reset intensity here to persist user choice
+    },
+
+    // Set intensity (0.0 - 2.0)
+    setIntensity(value) {
+        this.intensity = parseFloat(value);
+        // Restart current effect to apply new intensity
+        if (this.activeEffect && this.canvas) {
+            const current = this.activeEffect;
+            const container = this.canvas.parentNode;
+            this.start(current, container);
+        }
     },
 
     // Start an effect
@@ -72,6 +85,9 @@ const VisualEffects = {
                 break;
             case 'rain':
                 this.initRain();
+                break;
+            case 'storm':
+                this.initStorm();
                 break;
             case 'drizzle':
                 this.initDrizzle();
@@ -108,6 +124,9 @@ const VisualEffects = {
             case 'rain':
                 this.drawRain();
                 break;
+            case 'storm':
+                this.drawStorm();
+                break;
             case 'drizzle':
                 this.drawDrizzle();
                 break;
@@ -133,14 +152,15 @@ const VisualEffects = {
     // ============================================
     initSnow() {
         this.particles = [];
-        const count = Math.floor(this.canvas.width / 8);
+        const baseCount = Math.floor(this.canvas.width / 8);
+        const count = Math.floor(baseCount * this.intensity);
 
         for (let i = 0; i < count; i++) {
             this.particles.push({
                 x: Math.random() * this.canvas.width,
                 y: Math.random() * this.canvas.height,
                 radius: Math.random() * 3 + 1,
-                speedY: Math.random() * 1.5 + 0.5,
+                speedY: (Math.random() * 1.5 + 0.5) * (0.8 + this.intensity * 0.2), // Faster with higher intensity
                 speedX: Math.random() * 0.5 - 0.25,
                 opacity: Math.random() * 0.5 + 0.3
             });
@@ -181,7 +201,7 @@ const VisualEffects = {
     },
 
     drawAurora() {
-        this.auroraTime += 1;
+        this.auroraTime += 1 * this.intensity;
         const height = this.canvas.height * 0.4;
 
         this.auroraWaves.forEach(wave => {
@@ -215,14 +235,15 @@ const VisualEffects = {
     // ============================================
     initRain() {
         this.particles = [];
-        const count = Math.floor(this.canvas.width / 4);
+        const baseCount = Math.floor(this.canvas.width / 4);
+        const count = Math.floor(baseCount * this.intensity);
 
         for (let i = 0; i < count; i++) {
             this.particles.push({
                 x: Math.random() * this.canvas.width,
                 y: Math.random() * this.canvas.height,
                 length: Math.random() * 20 + 10,
-                speedY: Math.random() * 10 + 15,
+                speedY: (Math.random() * 10 + 15) * (0.8 + this.intensity * 0.2),
                 speedX: -2,
                 opacity: Math.random() * 0.3 + 0.1
             });
@@ -252,11 +273,51 @@ const VisualEffects = {
     },
 
     // ============================================
+    // STORM EFFECT ⛈️
+    // ============================================
+    initStorm() {
+        this.initRain();
+        // Storm specific: thicker rain lines if intensity high
+        if (this.intensity > 1.2) {
+            this.ctx.lineWidth = 2;
+        }
+        this.lightningTimer = 0;
+        this.nextLightning = Math.random() * 300 + 100;
+        this.isFlashing = false;
+        this.flashOpacity = 0;
+    },
+
+    drawStorm() {
+        this.drawRain(); // Reuse rain logic
+
+        // Lightning Logic
+        this.lightningTimer++;
+        if (this.lightningTimer > this.nextLightning) {
+            this.isFlashing = true;
+            this.flashOpacity = 0.8 * (Math.min(this.intensity, 1.5));
+            this.lightningTimer = 0;
+            // Less frequent with lower intensity
+            this.nextLightning = (Math.random() * 300 + 100) / this.intensity;
+        }
+
+        if (this.isFlashing) {
+            this.ctx.fillStyle = `rgba(255, 255, 255, ${this.flashOpacity})`;
+            this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+            this.flashOpacity -= 0.1;
+            if (this.flashOpacity <= 0) {
+                this.isFlashing = false;
+            }
+        }
+    },
+
+    // ============================================
     // DRIZZLE / MIST EFFECT 🌫️
     // ============================================
     initDrizzle() {
         this.particles = [];
-        const count = Math.floor(this.canvas.width / 6);
+        const baseCount = Math.floor(this.canvas.width / 6);
+        const count = Math.floor(baseCount * this.intensity);
 
         for (let i = 0; i < count; i++) {
             this.particles.push({
@@ -274,9 +335,9 @@ const VisualEffects = {
     },
 
     drawDrizzle() {
-        // Draw fog
-        this.fogOpacity = 0.15 + Math.sin(Date.now() / 2000) * 0.05;
-        this.ctx.fillStyle = `rgba(200, 210, 220, ${this.fogOpacity})`;
+        // Draw fog - denser with higher intensity
+        this.fogOpacity = (0.15 + Math.sin(Date.now() / 2000) * 0.05) * this.intensity;
+        this.ctx.fillStyle = `rgba(200, 210, 220, ${Math.min(this.fogOpacity, 0.5)})`;
         this.ctx.fillRect(0, this.canvas.height * 0.6, this.canvas.width, this.canvas.height * 0.4);
 
         // Draw drizzle
@@ -304,14 +365,15 @@ const VisualEffects = {
     initSunrays() {
         this.sunTime = 0;
         this.rays = [];
-        const rayCount = 12;
+        // More rays with intensity
+        const rayCount = Math.floor(12 * (0.8 + this.intensity * 0.4));
 
         for (let i = 0; i < rayCount; i++) {
             this.rays.push({
                 angle: (i / rayCount) * Math.PI * 2,
-                length: Math.random() * 200 + 300,
+                length: Math.random() * 200 + 400, // Longer rays
                 width: Math.random() * 30 + 20,
-                opacity: Math.random() * 0.2 + 0.1,
+                opacity: (Math.random() * 0.2 + 0.1) * this.intensity,
                 speed: Math.random() * 0.001 + 0.0005
             });
         }
@@ -319,18 +381,19 @@ const VisualEffects = {
 
     drawSunrays() {
         this.sunTime += 1;
-        const centerX = this.canvas.width * 0.85;
-        const centerY = this.canvas.height * 0.15;
+        const centerX = this.canvas.width * 0.85; // Top right sun position
+        const centerY = this.canvas.height * 0.1;
 
         // Draw sun glow
-        const gradient = this.ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, 150);
+        const glowSize = 150 * this.intensity;
+        const gradient = this.ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, glowSize);
         gradient.addColorStop(0, 'rgba(255, 223, 100, 0.4)');
         gradient.addColorStop(0.5, 'rgba(255, 180, 50, 0.2)');
         gradient.addColorStop(1, 'rgba(255, 180, 50, 0)');
 
         this.ctx.fillStyle = gradient;
         this.ctx.beginPath();
-        this.ctx.arc(centerX, centerY, 150, 0, Math.PI * 2);
+        this.ctx.arc(centerX, centerY, glowSize, 0, Math.PI * 2);
         this.ctx.fill();
 
         // Draw rays
@@ -360,7 +423,8 @@ const VisualEffects = {
     // ============================================
     initLeaves() {
         this.particles = [];
-        const count = 30;
+        const baseCount = 30;
+        const count = Math.floor(baseCount * this.intensity);
 
         const colors = ['#D2691E', '#FF8C00', '#B8860B', '#CD853F', '#8B4513'];
 
@@ -369,7 +433,7 @@ const VisualEffects = {
                 x: Math.random() * this.canvas.width,
                 y: Math.random() * this.canvas.height - this.canvas.height,
                 size: Math.random() * 15 + 10,
-                speedY: Math.random() * 1 + 0.5,
+                speedY: (Math.random() * 1 + 0.5) * this.intensity,
                 speedX: Math.random() * 2 - 1,
                 rotation: Math.random() * Math.PI * 2,
                 rotationSpeed: (Math.random() - 0.5) * 0.05,
@@ -430,7 +494,8 @@ const VisualEffects = {
     // ============================================
     initFireflies() {
         this.particles = [];
-        const count = 40;
+        const baseCount = 40;
+        const count = Math.floor(baseCount * this.intensity);
 
         for (let i = 0; i < count; i++) {
             this.particles.push({
@@ -488,7 +553,8 @@ const VisualEffects = {
     // ============================================
     initParticles() {
         this.particles = [];
-        const count = 60;
+        const baseCount = 60;
+        const count = Math.floor(baseCount * this.intensity);
 
         for (let i = 0; i < count; i++) {
             this.particles.push({
@@ -567,6 +633,17 @@ const VisualEffects = {
 @keyframes aurora-pulse {
     0%, 100% { opacity: 0.6; }
     50% { opacity: 1; }
+}
+`;
+            case 'storm':
+                return overlayCSS + `
+/* Storm Flash Effect */
+@keyframes lightning {
+    0%, 95% { opacity: 0; }
+    96% { opacity: 0.8; }
+    97% { opacity: 0; }
+    98% { opacity: 0.5; }
+    100% { opacity: 0; }
 }
 `;
             default:

@@ -516,30 +516,47 @@ function finishWizard() {
             title: 'Jesienny Wypoczynek',
             subtitle: 'Magia kolorów i spokoju',
             description: 'Odkryj urok złotej jesieni w naszym obiekcie. Przytulne wnętrza, ciepła atmosfera i spacery wśród spadających liści. Idealne miejsce na regenerację przed zimą.',
-            roomImage: 'img/room_autumn.png', // Would need logic to apply this to rooms
+            roomImage: 'img/room_autumn.png',
             spaImage: 'img/spa_autumn.png'
         },
         'winter': {
-            gradient: 'winter-forest',
+            gradient: 'winter-forest', // Needs to be 'winter-night' or check css-engine
             effect: 'snow',
             palette: 'cool',
-            // conceptual images
+            mainImage: 'img/hero_winter.png',
             title: 'Zimowa Kraina',
-            subtitle: 'Znajdź ciepło w mroźne dni'
+            subtitle: 'Znajdź ciepło w mroźne dni',
+            description: 'Magiczny czas w sercu zimy. Ośnieżone szczyty, gorąca czekolada przy kominku i niezapomniane widoki. Twój idealny zimowy azyl.',
         },
         'summer': {
             gradient: 'summer-sunset',
-            effect: 'fireflies',
+            effect: 'sunrays', // User wanted sunny
             palette: 'natural',
+            mainImage: 'img/hero_summer.png',
             title: 'Wakacyjna Oaza',
-            subtitle: 'Słońce, woda i relaks'
+            subtitle: 'Słońce, woda i relaks',
+            description: 'Poczuj letnią energię! Basen, słońce i beztroski wypoczynek w luksusowym wydaniu. Najlepsze miejsce na Twoje wakacje.',
         },
         'spring': {
             gradient: 'spring-bloom',
             effect: 'sunrays',
             palette: 'natural',
+            mainImage: 'img/hero_spring.png',
             title: 'Wiosenne Przebudzenie',
-            subtitle: 'Poczuj nową energię'
+            subtitle: 'Poczuj nową energię',
+            description: 'Świeżość wiosennego poranka. Kwitnąca natura, śpiew ptaków i spokój, którego szukasz. Zregeneruj siły w harmonii z przyrodą.',
+        },
+        // MOOD OVERRIDES (Mapped if specific answers are given, or can be added to Season step?)
+        // For now we map 'Dark/Rustic' via 'atmosphere' check or as a secret theme invocation?
+        // Let's rely on mapping. But user asked for specific selection.
+        'dark': {
+            gradient: 'midnight-city', // Dark gradient
+            effect: 'storm',
+            palette: 'dark', // We don't have 'dark' in palette list map maybe? 'luxury' maps to dark?
+            mainImage: 'img/hero_dark.png',
+            title: 'Tajemniczy Azyl',
+            subtitle: 'Elegancja w mroku',
+            description: 'Wyjątkowe miejsce dla poszukujących ciszy i atmosfery. Stylowe wnętrza, nastrojowe oświetlenie i bliskość natury w jej najbardziej majestatycznym wydaniu.',
         }
     };
 
@@ -583,30 +600,48 @@ function finishWizard() {
     // APPLY SEASONAL THEME (High Priority Override)
     // ============================================
     const season = wizardState.answers['season'];
+
+    // Special check for 'Rustic' + 'Forest' -> Dark Theme override? 
+    // Or just let user pick via Season? The user asked for "options". 
+    // Let's trust Season, but maybe we add 'dark' to Season options?
+    // Or just map 'adventure' atmosphere to 'dark' theme if season is 'year-round'
+
+    let targetTheme = null;
     if (season && SEASONAL_THEMES[season]) {
-        const theme = SEASONAL_THEMES[season];
-        console.log(`Applying seasonal theme: ${season}`, theme);
+        targetTheme = SEASONAL_THEMES[season];
+    }
+
+    // Mood Override Logic
+    const atmosphere = wizardState.answers['atmosphere'];
+    const style = wizardState.answers['style'];
+
+    if (atmosphere === 'adventure' && style === 'rustic') {
+        targetTheme = SEASONAL_THEMES['dark'];
+    }
+
+    if (targetTheme) {
+        console.log(`Applying detailed theme:`, targetTheme);
 
         // Override Gradient
-        if (theme.gradient) {
-            appState.effectsSettings.gradientPreset = theme.gradient;
+        if (targetTheme.gradient) {
+            appState.effectsSettings.gradientPreset = targetTheme.gradient;
             appState.effectsSettings.useGradients = true;
         }
 
         // Override Effect
-        if (theme.effect) {
-            appState.effectsSettings.atmosphericEffect = theme.effect;
+        if (targetTheme.effect) {
+            appState.effectsSettings.atmosphericEffect = targetTheme.effect;
         }
 
         // Override Hero Content & Image
-        if (theme.mainImage) appState.globalSettings.mainImage = theme.mainImage;
+        if (targetTheme.mainImage) appState.globalSettings.mainImage = targetTheme.mainImage;
         if (!appState.sectionContent) appState.sectionContent = {};
         if (!appState.sectionContent.intro) appState.sectionContent.intro = {};
 
         // Only override text if it wasn't set by property defaults OR force it for theme
-        if (theme.title) appState.sectionContent.intro.title = theme.title;
-        if (theme.subtitle) appState.sectionContent.intro.subtitle = theme.subtitle;
-        if (theme.description) appState.sectionContent.intro.description = theme.description;
+        if (targetTheme.title) appState.sectionContent.intro.title = targetTheme.title;
+        if (targetTheme.subtitle) appState.sectionContent.intro.subtitle = targetTheme.subtitle;
+        if (targetTheme.description) appState.sectionContent.intro.description = targetTheme.description;
 
         // Note: For advanced usage, we could also replace room images or spa images in 'appState.sectionContent' 
         // using template engine logic, but for now we focus on Hero + Effects.

@@ -248,6 +248,20 @@ function setupEventListeners() {
     // New project button
     document.getElementById('btn-new').addEventListener('click', resetApp);
 
+    // 7. Intensity Slider
+    document.getElementById('effect-intensity').addEventListener('input', (e) => {
+        const val = e.target.value;
+        document.getElementById('intensity-value').textContent = Math.round(val * 100) + '%';
+        appState.effectsSettings.intensity = val;
+
+        // Update live
+        if (window.VisualEffects) {
+            VisualEffects.setIntensity(val);
+        }
+    });
+
+    // 8. Generate Code
+    document.getElementById('btn-generate-code').addEventListener('click', generateCode);
     // Builder events (will be active after wizard)
     document.getElementById('btn-add-object')?.addEventListener('click', addNewObject);
     document.getElementById('btn-generate')?.addEventListener('click', generateCode);
@@ -1178,6 +1192,7 @@ ${effectsScriptTag}
 (function() {
     function initEffects() {
         if (window.VisualEffects && '${effect}' !== 'none') {
+            VisualEffects.setIntensity(${appState.effectsSettings.intensity || 1.0});
             VisualEffects.start('${effect}', document.body);
         }
     }

@@ -65,6 +65,7 @@ const CSSEngine = {
         'frosty-morning': 'linear-gradient(135deg, #e8f4fc 0%, #d1e8ff 50%, #b8d4f0 100%)',
         'glacial': 'linear-gradient(135deg, #134e5e 0%, #71b280 50%, #88d8b0 100%)',
         'christmas': 'linear-gradient(135deg, #c41e3a 0%, #1a472a 50%, #d4af37 100%)',
+        'midnight-city': 'linear-gradient(135deg, #2b32b2 0%, #1488cc 50%, #000000 100%)',
 
         // ===== ADDITIONAL SEASONAL GRADIENTS (12) =====
         'autumn-leaves': 'linear-gradient(135deg, #d4521e 0%, #bf820d 50%, #6b4423 100%)',
