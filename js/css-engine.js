@@ -103,6 +103,36 @@ const CSSEngine = {
         // Generate per-section backgrounds
         const sectionBgCSS = this.generateSectionBackgrounds(sectionBackgrounds, gradientValue);
 
+        // Global Text Contrast Override
+        const textContrast = effectsSettings.textContrast || 'auto';
+        let contrastCSS = '';
+        if (textContrast === 'light') {
+            contrastCSS = `
+            /* Forced Light Text */
+            body, p, h1, h2, h3, h4, h5, h6, li, span, div, strong, em, b, i, .section-title, .section-desc {
+                color: #ffffff !important;
+            }
+            .section-label { color: var(--color-secondary-light) !important; }
+            .amenity-card, .stat-item, .feature-card, .room-card, .testimonial-card {
+                background: rgba(255, 255, 255, 0.1) !important;
+                border: 1px solid rgba(255, 255, 255, 0.2) !important;
+                backdrop-filter: blur(10px);
+            }
+            `;
+        } else if (textContrast === 'dark') {
+            contrastCSS = `
+            /* Forced Dark Text */
+            body, p, h1, h2, h3, h4, h5, h6, li, span, div, strong, em, b, i, .section-title, .section-desc {
+                color: #1A202C !important;
+            }
+            .section-label { color: var(--color-secondary) !important; }
+            .amenity-card, .stat-item, .feature-card, .room-card, .testimonial-card {
+                background: #ffffff !important;
+                border: 1px solid var(--color-border) !important;
+            }
+            `;
+        }
+
         // Generate gradient CSS overrides (deprecated in favor of per-section backgrounds)
         const gradientOverrides = useGradients ? `
 /* ============================================
@@ -220,6 +250,8 @@ const CSSEngine = {
 ${gradientOverrides}
 
 ${sectionBgCSS}
+
+${contrastCSS}
 
 /* ============================================
    RESET & BASE
@@ -2130,6 +2162,22 @@ ${sectionClass} .amenity-card {
 ${sectionClass} .amenity-card h3 {
     color: #fff !important;
 }
+
+/* Fix visibility for stats and features on gradient background */
+${sectionClass} .stat-item,
+${sectionClass} .feature-card {
+    background: rgba(255,255,255,0.15) !important;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255,255,255,0.2) !important;
+}
+
+${sectionClass} .stat-number,
+${sectionClass} .stat-label,
+${sectionClass} .feature-icon i,
+${sectionClass} .feature-title,
+${sectionClass} .feature-desc {
+    color: #fff !important;
+}
 `;
                     break;
 
@@ -2151,6 +2199,42 @@ ${sectionClass} p, ${sectionClass} li {
 ${sectionClass} .section-label {
     color: var(--color-secondary-light) !important;
 }
+
+/* Ensure ALL text elements in dark sections are white */
+${sectionClass} span,
+${sectionClass} div,
+${sectionClass} .stat-number,
+${sectionClass} .stat-label,
+${sectionClass} .room-price strong,
+${sectionClass} .room-price {
+    color: #fff !important;
+}
+
+/* Make cards semi-transparent white on dark to keep contrast? 
+   Or keep them white and let text be dark? 
+   If card has white background, text inside should be dark.
+   CSS Cascade: .section-dark p { color: #fff } might override .card p { color: #333 }
+   We need to protect internal card text if card is white.
+*/
+${sectionClass} .room-card,
+${sectionClass} .testimonial-card,
+${sectionClass} .pricing-card,
+${sectionClass} .attraction-card,
+${sectionClass} .stat-item {
+    background: var(--color-white) !important;
+    /* Reset text color inside white cards */
+}
+
+${sectionClass} .room-card *, 
+${sectionClass} .testimonial-card *,
+${sectionClass} .pricing-card *,
+${sectionClass} .attraction-card *,
+${sectionClass} .stat-item * {
+    color: initial; /* Reset to inherit from card, or specific dark color */
+}
+
+${sectionClass} .stat-number { color: var(--color-primary) !important; }
+${sectionClass} .stat-label { color: var(--color-gray) !important; }
 `;
                     break;
 

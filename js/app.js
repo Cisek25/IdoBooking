@@ -1601,6 +1601,13 @@ function selectTemplate(templateId) {
 }
 window.selectTemplate = selectTemplate;
 
+function updateTextContrast(value) {
+    if (!appState.effectsSettings) appState.effectsSettings = {};
+    appState.effectsSettings.textContrast = value;
+    Preview.debouncedRender();
+}
+window.updateTextContrast = updateTextContrast;
+
 // ============================================
 // APPLY AI SUGGESTION WITH FEEDBACK
 // ============================================

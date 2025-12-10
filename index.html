@@ -156,6 +156,15 @@
                                 <input type="color" id="color-accent" value="#00B894">
                             </div>
                         </div>
+                        <div class="color-picker-item" style="margin-top: 15px; width: 100%;">
+                            <label>Kontrast Tekstu</label>
+                            <select id="text-contrast" onchange="updateTextContrast(this.value)"
+                                style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ddd;">
+                                <option value="auto">Automatyczny (Auto)</option>
+                                <option value="light">Jasny Tekst (Wymuś)</option>
+                                <option value="dark">Ciemny Tekst (Wymuś)</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
@@ -1185,7 +1194,7 @@
     <script src="js/ai-engine.js"></script>
     <script src="js/wizard.js"></script>
     <script src="js/template-engine.js"></script>
-    <script src="js/css-engine.js"></script>
+    <script src="js/css-engine.js?v=3"></script>
     <script src="js/preview.js?v=3"></script>
     <script src="js/gemini-api.js"></script>
     <script src="js/visual-effects.js?v=3"></script>
