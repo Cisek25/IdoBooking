@@ -1738,19 +1738,8 @@ function setAtmosphericEffect(effectType) {
     appState.effectsSettings.atmosphericEffect = effectType;
     console.log('🌨️ Atmospheric effect set to:', effectType);
 
-    // Apply effect to preview iframe
-    const preview = document.getElementById('preview-frame');
-    if (!preview?.contentDocument?.body) {
-        console.warn('Preview iframe not ready');
-        return;
-    }
-
-    const previewBody = preview.contentDocument.body;
-
-    // Start the visual effect
-    if (window.VisualEffects) {
-        VisualEffects.start(effectType, previewBody);
-    }
+    // Re-render preview to apply effect
+    Preview.debouncedRender();
 }
 
 window.setAtmosphericEffect = setAtmosphericEffect;
