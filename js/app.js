@@ -1091,7 +1091,12 @@ async function generateCode() {
     try {
         const res = await fetch('js/visual-effects.js');
         if (res.ok) {
-            effectsLib = await res.text();
+            let text = await res.text();
+            // Minify: Remove comments and trim whitespace to save space in CMS
+            effectsLib = text
+                .replace(/\/\*[\s\S]*?\*\/|([^\\:]|^)\/\/.*$/gm, '$1') // Remove comments
+                .replace(/^\s*[\r\n]/gm, '') // Remove empty lines
+                .trim();
         } else {
             console.warn('Failed to load visual-effects.js');
         }
