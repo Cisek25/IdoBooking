@@ -1144,11 +1144,17 @@ function generateScriptsFile() {
 <script src="https://cisek25.github.io/IdoBooking/js/visual-effects.js"></script>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // 1. Initialize Atmospheric Effects
-    if (window.VisualEffects && '${effect}' !== 'none') {
-        // Create a wrapper for effects if needed, or attach to body
-        VisualEffects.start('${effect}', document.body);
+(function() {
+    function initEffects() {
+        if (window.VisualEffects && '${effect}' !== 'none') {
+            VisualEffects.start('${effect}', document.body);
+        }
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initEffects);
+    } else {
+        initEffects();
     }
 
     // 2. Gallery Lightbox
@@ -1170,7 +1176,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.body.style.overflow = '';
         }
     };
-});
+})();
 </script>`;
 }
 
