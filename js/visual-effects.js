@@ -1,0 +1,579 @@
+// ============================================
+// VISUAL-EFFECTS.JS - Atmospheric visual effects
+// ============================================
+
+const VisualEffects = {
+    activeEffect: null,
+    canvas: null,
+    ctx: null,
+    animationId: null,
+    particles: [],
+
+    // Initialize canvas for effects
+    init(container) {
+        if (this.canvas) {
+            this.destroy();
+        }
+
+        this.canvas = document.createElement('canvas');
+        this.canvas.id = 'visual-effects-canvas';
+        this.canvas.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        `;
+
+        container.appendChild(this.canvas);
+        this.ctx = this.canvas.getContext('2d');
+        this.resize();
+
+        window.addEventListener('resize', () => this.resize());
+    },
+
+    resize() {
+        if (!this.canvas) return;
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+    },
+
+    destroy() {
+        if (this.animationId) {
+            cancelAnimationFrame(this.animationId);
+            this.animationId = null;
+        }
+        if (this.canvas && this.canvas.parentNode) {
+            this.canvas.parentNode.removeChild(this.canvas);
+        }
+        this.canvas = null;
+        this.ctx = null;
+        this.particles = [];
+        this.activeEffect = null;
+    },
+
+    // Start an effect
+    start(effectType, container) {
+        this.destroy();
+
+        if (!effectType || effectType === 'none') return;
+
+        this.init(container);
+        this.activeEffect = effectType;
+
+        switch (effectType) {
+            case 'snow':
+                this.initSnow();
+                break;
+            case 'aurora':
+                this.initAurora();
+                break;
+            case 'rain':
+                this.initRain();
+                break;
+            case 'drizzle':
+                this.initDrizzle();
+                break;
+            case 'sunrays':
+                this.initSunrays();
+                break;
+            case 'leaves':
+                this.initLeaves();
+                break;
+            case 'fireflies':
+                this.initFireflies();
+                break;
+            case 'particles':
+                this.initParticles();
+                break;
+        }
+
+        this.animate();
+    },
+
+    animate() {
+        if (!this.ctx || !this.activeEffect) return;
+
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+        switch (this.activeEffect) {
+            case 'snow':
+                this.drawSnow();
+                break;
+            case 'aurora':
+                this.drawAurora();
+                break;
+            case 'rain':
+                this.drawRain();
+                break;
+            case 'drizzle':
+                this.drawDrizzle();
+                break;
+            case 'sunrays':
+                this.drawSunrays();
+                break;
+            case 'leaves':
+                this.drawLeaves();
+                break;
+            case 'fireflies':
+                this.drawFireflies();
+                break;
+            case 'particles':
+                this.drawParticles();
+                break;
+        }
+
+        this.animationId = requestAnimationFrame(() => this.animate());
+    },
+
+    // ============================================
+    // SNOW EFFECT ❄️
+    // ============================================
+    initSnow() {
+        this.particles = [];
+        const count = Math.floor(this.canvas.width / 8);
+
+        for (let i = 0; i < count; i++) {
+            this.particles.push({
+                x: Math.random() * this.canvas.width,
+                y: Math.random() * this.canvas.height,
+                radius: Math.random() * 3 + 1,
+                speedY: Math.random() * 1.5 + 0.5,
+                speedX: Math.random() * 0.5 - 0.25,
+                opacity: Math.random() * 0.5 + 0.3
+            });
+        }
+    },
+
+    drawSnow() {
+        this.particles.forEach(p => {
+            this.ctx.beginPath();
+            this.ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+            this.ctx.fillStyle = `rgba(255, 255, 255, ${p.opacity})`;
+            this.ctx.fill();
+
+            // Update position
+            p.y += p.speedY;
+            p.x += p.speedX + Math.sin(p.y / 50) * 0.5;
+
+            // Reset if off screen
+            if (p.y > this.canvas.height) {
+                p.y = -10;
+                p.x = Math.random() * this.canvas.width;
+            }
+            if (p.x > this.canvas.width) p.x = 0;
+            if (p.x < 0) p.x = this.canvas.width;
+        });
+    },
+
+    // ============================================
+    // AURORA BOREALIS EFFECT 🌌
+    // ============================================
+    initAurora() {
+        this.auroraTime = 0;
+        this.auroraWaves = [
+            { color: 'rgba(0, 255, 127, 0.3)', speed: 0.002, amplitude: 50, offset: 0 },
+            { color: 'rgba(138, 43, 226, 0.25)', speed: 0.003, amplitude: 40, offset: 100 },
+            { color: 'rgba(0, 191, 255, 0.2)', speed: 0.0025, amplitude: 60, offset: 200 }
+        ];
+    },
+
+    drawAurora() {
+        this.auroraTime += 1;
+        const height = this.canvas.height * 0.4;
+
+        this.auroraWaves.forEach(wave => {
+            this.ctx.beginPath();
+            this.ctx.moveTo(0, height);
+
+            for (let x = 0; x <= this.canvas.width; x += 5) {
+                const y = height +
+                    Math.sin((x + this.auroraTime * wave.speed * 100) * 0.01) * wave.amplitude +
+                    Math.sin((x + this.auroraTime * wave.speed * 50) * 0.02) * (wave.amplitude / 2) +
+                    wave.offset;
+                this.ctx.lineTo(x, y);
+            }
+
+            this.ctx.lineTo(this.canvas.width, 0);
+            this.ctx.lineTo(0, 0);
+            this.ctx.closePath();
+
+            const gradient = this.ctx.createLinearGradient(0, 0, 0, height + 100);
+            gradient.addColorStop(0, 'rgba(0,0,0,0)');
+            gradient.addColorStop(0.5, wave.color);
+            gradient.addColorStop(1, 'rgba(0,0,0,0)');
+
+            this.ctx.fillStyle = gradient;
+            this.ctx.fill();
+        });
+    },
+
+    // ============================================
+    // RAIN EFFECT 🌧️
+    // ============================================
+    initRain() {
+        this.particles = [];
+        const count = Math.floor(this.canvas.width / 4);
+
+        for (let i = 0; i < count; i++) {
+            this.particles.push({
+                x: Math.random() * this.canvas.width,
+                y: Math.random() * this.canvas.height,
+                length: Math.random() * 20 + 10,
+                speedY: Math.random() * 10 + 15,
+                speedX: -2,
+                opacity: Math.random() * 0.3 + 0.1
+            });
+        }
+    },
+
+    drawRain() {
+        this.ctx.strokeStyle = 'rgba(174, 194, 224, 0.5)';
+        this.ctx.lineWidth = 1;
+
+        this.particles.forEach(p => {
+            this.ctx.beginPath();
+            this.ctx.moveTo(p.x, p.y);
+            this.ctx.lineTo(p.x + p.speedX, p.y + p.length);
+            this.ctx.globalAlpha = p.opacity;
+            this.ctx.stroke();
+
+            p.y += p.speedY;
+            p.x += p.speedX;
+
+            if (p.y > this.canvas.height) {
+                p.y = -p.length;
+                p.x = Math.random() * (this.canvas.width + 200);
+            }
+        });
+        this.ctx.globalAlpha = 1;
+    },
+
+    // ============================================
+    // DRIZZLE / MIST EFFECT 🌫️
+    // ============================================
+    initDrizzle() {
+        this.particles = [];
+        const count = Math.floor(this.canvas.width / 6);
+
+        for (let i = 0; i < count; i++) {
+            this.particles.push({
+                x: Math.random() * this.canvas.width,
+                y: Math.random() * this.canvas.height,
+                radius: Math.random() * 1 + 0.5,
+                speedY: Math.random() * 2 + 1,
+                speedX: Math.random() * 0.5 - 0.25,
+                opacity: Math.random() * 0.2 + 0.1
+            });
+        }
+
+        // Add fog layer
+        this.fogOpacity = 0;
+    },
+
+    drawDrizzle() {
+        // Draw fog
+        this.fogOpacity = 0.15 + Math.sin(Date.now() / 2000) * 0.05;
+        this.ctx.fillStyle = `rgba(200, 210, 220, ${this.fogOpacity})`;
+        this.ctx.fillRect(0, this.canvas.height * 0.6, this.canvas.width, this.canvas.height * 0.4);
+
+        // Draw drizzle
+        this.ctx.fillStyle = 'rgba(174, 194, 224, 0.4)';
+        this.particles.forEach(p => {
+            this.ctx.beginPath();
+            this.ctx.ellipse(p.x, p.y, p.radius, p.radius * 3, 0, 0, Math.PI * 2);
+            this.ctx.globalAlpha = p.opacity;
+            this.ctx.fill();
+
+            p.y += p.speedY;
+            p.x += p.speedX;
+
+            if (p.y > this.canvas.height) {
+                p.y = -10;
+                p.x = Math.random() * this.canvas.width;
+            }
+        });
+        this.ctx.globalAlpha = 1;
+    },
+
+    // ============================================
+    // SUNRAYS EFFECT ☀️
+    // ============================================
+    initSunrays() {
+        this.sunTime = 0;
+        this.rays = [];
+        const rayCount = 12;
+
+        for (let i = 0; i < rayCount; i++) {
+            this.rays.push({
+                angle: (i / rayCount) * Math.PI * 2,
+                length: Math.random() * 200 + 300,
+                width: Math.random() * 30 + 20,
+                opacity: Math.random() * 0.2 + 0.1,
+                speed: Math.random() * 0.001 + 0.0005
+            });
+        }
+    },
+
+    drawSunrays() {
+        this.sunTime += 1;
+        const centerX = this.canvas.width * 0.85;
+        const centerY = this.canvas.height * 0.15;
+
+        // Draw sun glow
+        const gradient = this.ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, 150);
+        gradient.addColorStop(0, 'rgba(255, 223, 100, 0.4)');
+        gradient.addColorStop(0.5, 'rgba(255, 180, 50, 0.2)');
+        gradient.addColorStop(1, 'rgba(255, 180, 50, 0)');
+
+        this.ctx.fillStyle = gradient;
+        this.ctx.beginPath();
+        this.ctx.arc(centerX, centerY, 150, 0, Math.PI * 2);
+        this.ctx.fill();
+
+        // Draw rays
+        this.rays.forEach(ray => {
+            const angle = ray.angle + this.sunTime * ray.speed;
+            const x1 = centerX + Math.cos(angle) * 50;
+            const y1 = centerY + Math.sin(angle) * 50;
+            const x2 = centerX + Math.cos(angle) * ray.length;
+            const y2 = centerY + Math.sin(angle) * ray.length;
+
+            const rayGradient = this.ctx.createLinearGradient(x1, y1, x2, y2);
+            rayGradient.addColorStop(0, `rgba(255, 223, 100, ${ray.opacity})`);
+            rayGradient.addColorStop(1, 'rgba(255, 223, 100, 0)');
+
+            this.ctx.beginPath();
+            this.ctx.moveTo(x1, y1);
+            this.ctx.lineTo(x2, y2);
+            this.ctx.lineWidth = ray.width;
+            this.ctx.strokeStyle = rayGradient;
+            this.ctx.lineCap = 'round';
+            this.ctx.stroke();
+        });
+    },
+
+    // ============================================
+    // FALLING LEAVES EFFECT 🍂
+    // ============================================
+    initLeaves() {
+        this.particles = [];
+        const count = 30;
+
+        const colors = ['#D2691E', '#FF8C00', '#B8860B', '#CD853F', '#8B4513'];
+
+        for (let i = 0; i < count; i++) {
+            this.particles.push({
+                x: Math.random() * this.canvas.width,
+                y: Math.random() * this.canvas.height - this.canvas.height,
+                size: Math.random() * 15 + 10,
+                speedY: Math.random() * 1 + 0.5,
+                speedX: Math.random() * 2 - 1,
+                rotation: Math.random() * Math.PI * 2,
+                rotationSpeed: (Math.random() - 0.5) * 0.05,
+                oscillation: Math.random() * Math.PI * 2,
+                color: colors[Math.floor(Math.random() * colors.length)]
+            });
+        }
+    },
+
+    drawLeaves() {
+        this.particles.forEach(p => {
+            this.ctx.save();
+            this.ctx.translate(p.x, p.y);
+            this.ctx.rotate(p.rotation);
+
+            // Draw leaf shape
+            this.ctx.beginPath();
+            this.ctx.moveTo(0, -p.size / 2);
+            this.ctx.bezierCurveTo(
+                p.size / 2, -p.size / 4,
+                p.size / 2, p.size / 4,
+                0, p.size / 2
+            );
+            this.ctx.bezierCurveTo(
+                -p.size / 2, p.size / 4,
+                -p.size / 2, -p.size / 4,
+                0, -p.size / 2
+            );
+
+            this.ctx.fillStyle = p.color;
+            this.ctx.fill();
+
+            // Leaf vein
+            this.ctx.beginPath();
+            this.ctx.moveTo(0, -p.size / 2);
+            this.ctx.lineTo(0, p.size / 2);
+            this.ctx.strokeStyle = 'rgba(0,0,0,0.2)';
+            this.ctx.lineWidth = 1;
+            this.ctx.stroke();
+
+            this.ctx.restore();
+
+            // Update
+            p.y += p.speedY;
+            p.x += p.speedX + Math.sin(p.oscillation) * 0.5;
+            p.rotation += p.rotationSpeed;
+            p.oscillation += 0.02;
+
+            if (p.y > this.canvas.height + p.size) {
+                p.y = -p.size;
+                p.x = Math.random() * this.canvas.width;
+            }
+        });
+    },
+
+    // ============================================
+    // FIREFLIES EFFECT 🌟
+    // ============================================
+    initFireflies() {
+        this.particles = [];
+        const count = 40;
+
+        for (let i = 0; i < count; i++) {
+            this.particles.push({
+                x: Math.random() * this.canvas.width,
+                y: Math.random() * this.canvas.height,
+                radius: Math.random() * 3 + 2,
+                speedX: (Math.random() - 0.5) * 0.5,
+                speedY: (Math.random() - 0.5) * 0.5,
+                phase: Math.random() * Math.PI * 2,
+                glowSpeed: Math.random() * 0.03 + 0.02
+            });
+        }
+    },
+
+    drawFireflies() {
+        this.particles.forEach(p => {
+            const glow = (Math.sin(p.phase) + 1) / 2;
+
+            // Outer glow
+            const gradient = this.ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.radius * 4);
+            gradient.addColorStop(0, `rgba(255, 255, 100, ${glow * 0.8})`);
+            gradient.addColorStop(0.5, `rgba(200, 255, 100, ${glow * 0.3})`);
+            gradient.addColorStop(1, 'rgba(200, 255, 100, 0)');
+
+            this.ctx.beginPath();
+            this.ctx.arc(p.x, p.y, p.radius * 4, 0, Math.PI * 2);
+            this.ctx.fillStyle = gradient;
+            this.ctx.fill();
+
+            // Core
+            this.ctx.beginPath();
+            this.ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+            this.ctx.fillStyle = `rgba(255, 255, 200, ${glow})`;
+            this.ctx.fill();
+
+            // Update
+            p.x += p.speedX;
+            p.y += p.speedY;
+            p.phase += p.glowSpeed;
+
+            // Gentle direction changes
+            if (Math.random() < 0.02) {
+                p.speedX = (Math.random() - 0.5) * 0.5;
+                p.speedY = (Math.random() - 0.5) * 0.5;
+            }
+
+            // Boundary check
+            if (p.x < 0 || p.x > this.canvas.width) p.speedX *= -1;
+            if (p.y < 0 || p.y > this.canvas.height) p.speedY *= -1;
+        });
+    },
+
+    // ============================================
+    // FLOATING PARTICLES EFFECT ✨
+    // ============================================
+    initParticles() {
+        this.particles = [];
+        const count = 60;
+
+        for (let i = 0; i < count; i++) {
+            this.particles.push({
+                x: Math.random() * this.canvas.width,
+                y: Math.random() * this.canvas.height,
+                radius: Math.random() * 2 + 1,
+                speedX: (Math.random() - 0.5) * 0.3,
+                speedY: -Math.random() * 0.5 - 0.2,
+                opacity: Math.random() * 0.5 + 0.2,
+                color: `hsl(${Math.random() * 60 + 200}, 70%, 70%)`
+            });
+        }
+    },
+
+    drawParticles() {
+        this.particles.forEach(p => {
+            this.ctx.beginPath();
+            this.ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+            this.ctx.fillStyle = p.color;
+            this.ctx.globalAlpha = p.opacity;
+            this.ctx.fill();
+
+            p.x += p.speedX + Math.sin(p.y / 30) * 0.2;
+            p.y += p.speedY;
+
+            if (p.y < -10) {
+                p.y = this.canvas.height + 10;
+                p.x = Math.random() * this.canvas.width;
+            }
+        });
+        this.ctx.globalAlpha = 1;
+    },
+
+    // ============================================
+    // GENERATE CSS FOR EFFECTS
+    // ============================================
+    generateCSS(effectType) {
+        if (!effectType || effectType === 'none') return '';
+
+        const overlayCSS = `
+/* Atmospheric Effect Overlay */
+.atmospheric-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+}
+`;
+
+        switch (effectType) {
+            case 'snow':
+                return overlayCSS + `
+/* Snow Effect - CSS Fallback */
+@keyframes snowfall {
+    0% { transform: translateY(-100vh) rotate(0deg); }
+    100% { transform: translateY(100vh) rotate(360deg); }
+}
+`;
+            case 'aurora':
+                return overlayCSS + `
+/* Aurora Borealis Effect */
+.aurora-container {
+    background: linear-gradient(180deg, 
+        rgba(0,0,20,0.8) 0%,
+        rgba(0,50,100,0.3) 30%,
+        rgba(0,100,50,0.2) 50%,
+        rgba(100,0,150,0.2) 70%,
+        transparent 100%
+    );
+    animation: aurora-pulse 8s ease-in-out infinite;
+}
+
+@keyframes aurora-pulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+`;
+            default:
+                return overlayCSS;
+        }
+    }
+};
+
+// Expose to window
+window.VisualEffects = VisualEffects;
