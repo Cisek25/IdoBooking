@@ -1081,10 +1081,23 @@ function toggleFullscreen() {
 // ============================================
 // CODE GENERATION
 // ============================================
-function generateCode() {
+async function generateCode() {
     // Collect data
     const objects = appState.objects;
     const enabledSections = appState.enabledSections;
+
+    // Fetch Visual Effects Script for Inlining
+    let effectsLib = '';
+    try {
+        const res = await fetch('js/visual-effects.js');
+        if (res.ok) {
+            effectsLib = await res.text();
+        } else {
+            console.warn('Failed to load visual-effects.js');
+        }
+    } catch (e) {
+        console.error('Error loading visual-effects.js for inline:', e);
+    }
 
     // Generate all parts
     const settings = {
@@ -1094,7 +1107,7 @@ function generateCode() {
     const head = TemplateEngine.generateHead(settings);
     const sections = TemplateEngine.generateSections(settings, objects, enabledSections);
     const styles = CSSEngine.generate(settings, appState.effectsSettings, appState.sectionBackgrounds);
-    const scripts = generateScriptsFile();
+    const scripts = generateScriptsFile(effectsLib);
 
     // Generate subpage (body-only content)
     const subpage = generateSubpageCode(settings, objects, enabledSections, styles, scripts);
@@ -1131,8 +1144,20 @@ ${styles}
 ${scripts}`;
 }
 
-function generateScriptsFile() {
+function generateScriptsFile(effectsLib) {
     const effect = appState.effectsSettings.atmosphericEffect || 'none';
+
+    // Decide whether to inline or link
+    let effectsScriptTag = '';
+    if (effectsLib) {
+        effectsScriptTag = `<!-- Inlined Visual Effects -->
+<script>
+${effectsLib}
+</script>`;
+    } else {
+        effectsScriptTag = `<!-- External Effects Script (Fallback) -->
+<script src="https://cisek25.github.io/IdoBooking/js/visual-effects.js"></script>`;
+    }
 
     return `<!-- ============================================
      ${appState.globalSettings.propertyName || 'Nazwa Obiektu'} - SCRIPTS
@@ -1140,8 +1165,7 @@ function generateScriptsFile() {
      Wklej w panelu CMS → Koniec sekcji body
      ============================================ -->
 
-<!-- External Effects Script -->
-<script src="https://cisek25.github.io/IdoBooking/js/visual-effects.js"></script>
+${effectsScriptTag}
 
 <script>
 (function() {
