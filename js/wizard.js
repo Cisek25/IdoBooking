@@ -89,8 +89,10 @@ const WIZARD_STEPS = [
         subtitle: 'Kiedy obiekt jest najpopularniejszy?',
         options: [
             { value: 'year-round', label: 'Całoroczny', icon: 'fa-calendar', score: {} },
-            { value: 'summer', label: 'Letni', icon: 'fa-sun', score: { family: 1 } },
-            { value: 'winter', label: 'Zimowy', icon: 'fa-snowflake', score: { family: 1 } },
+            { value: 'summer', label: 'Lato', icon: 'fa-sun', score: { family: 1 } },
+            { value: 'autumn', label: 'Jesień', icon: 'fa-leaf', score: { romantic: 1, eco: 1 } },
+            { value: 'winter', label: 'Zima', icon: 'fa-snowflake', score: { family: 1 } },
+            { value: 'spring', label: 'Wiosna', icon: 'fa-seedling', score: { eco: 1 } },
             { value: 'weekends', label: 'Weekendy', icon: 'fa-calendar-week', score: { romantic: 1 } }
         ]
     },
@@ -502,7 +504,49 @@ function finishWizard() {
         }
     }
 
-    // Apply defaults based on property type
+    // ============================================
+    // SEASONAL THEMES CONFIGURATION
+    // ============================================
+    const SEASONAL_THEMES = {
+        'autumn': {
+            gradient: 'autumn-leaves',
+            effect: 'leaves',
+            palette: 'warm',
+            mainImage: 'img/hero_autumn.png',
+            title: 'Jesienny Wypoczynek',
+            subtitle: 'Magia kolorów i spokoju',
+            description: 'Odkryj urok złotej jesieni w naszym obiekcie. Przytulne wnętrza, ciepła atmosfera i spacery wśród spadających liści. Idealne miejsce na regenerację przed zimą.',
+            roomImage: 'img/room_autumn.png', // Would need logic to apply this to rooms
+            spaImage: 'img/spa_autumn.png'
+        },
+        'winter': {
+            gradient: 'winter-forest',
+            effect: 'snow',
+            palette: 'cool',
+            // conceptual images
+            title: 'Zimowa Kraina',
+            subtitle: 'Znajdź ciepło w mroźne dni'
+        },
+        'summer': {
+            gradient: 'summer-sunset',
+            effect: 'fireflies',
+            palette: 'natural',
+            title: 'Wakacyjna Oaza',
+            subtitle: 'Słońce, woda i relaks'
+        },
+        'spring': {
+            gradient: 'spring-bloom',
+            effect: 'sunrays',
+            palette: 'natural',
+            title: 'Wiosenne Przebudzenie',
+            subtitle: 'Poczuj nową energię'
+        }
+    };
+
+    // Collect all answers
+    const finalAnswers = wizardState.answers;
+
+    // Apply defaults based on property type (existing logic)
     const propertyType = wizardState.answers['property-type'];
     if (propertyType && PROPERTY_DEFAULTS[propertyType]) {
         const defaults = PROPERTY_DEFAULTS[propertyType];
@@ -535,6 +579,39 @@ function finishWizard() {
         console.log(`Applied defaults for ${propertyType}:`, defaults);
     }
 
+    // ============================================
+    // APPLY SEASONAL THEME (High Priority Override)
+    // ============================================
+    const season = wizardState.answers['season'];
+    if (season && SEASONAL_THEMES[season]) {
+        const theme = SEASONAL_THEMES[season];
+        console.log(`Applying seasonal theme: ${season}`, theme);
+
+        // Override Gradient
+        if (theme.gradient) {
+            appState.effectsSettings.gradientPreset = theme.gradient;
+            appState.effectsSettings.useGradients = true;
+        }
+
+        // Override Effect
+        if (theme.effect) {
+            appState.effectsSettings.atmosphericEffect = theme.effect;
+        }
+
+        // Override Hero Content & Image
+        if (theme.mainImage) appState.globalSettings.mainImage = theme.mainImage;
+        if (!appState.sectionContent) appState.sectionContent = {};
+        if (!appState.sectionContent.intro) appState.sectionContent.intro = {};
+
+        // Only override text if it wasn't set by property defaults OR force it for theme
+        if (theme.title) appState.sectionContent.intro.title = theme.title;
+        if (theme.subtitle) appState.sectionContent.intro.subtitle = theme.subtitle;
+        if (theme.description) appState.sectionContent.intro.description = theme.description;
+
+        // Note: For advanced usage, we could also replace room images or spa images in 'appState.sectionContent' 
+        // using template engine logic, but for now we focus on Hero + Effects.
+    }
+
     // Store wizard data
     appState.wizardData = {
         answers: wizardState.answers,
@@ -542,11 +619,14 @@ function finishWizard() {
         recommendedTemplate: recommendedTemplate
     };
 
-    // Switch to builder
+    console.log('Wizard Finished:', appState);
+
+    // Switch to Builder View
     document.getElementById('wizard-panel').classList.add('hidden');
     document.getElementById('builder-panel').classList.remove('hidden');
+    document.getElementById('builder-panel').classList.add('active');
 
-    // Initialize builder with AI recommendation
+    // Initialize Builder
     initBuilder(recommendedTemplate);
 }
 
