@@ -99,6 +99,36 @@
 
 
                 <!-- Template Gallery -->
+                <!-- Treść Główna -->
+                <div class="settings-section main-content-panel collapsible">
+                    <h4><i class="fas fa-pen-to-square"></i> Treść Główna</h4>
+                    <div class="settings-section-content">
+                        <div class="form-group">
+                            <label>Tytuł Główny</label>
+                            <input type="text" id="hero-title" placeholder="Np. Luksusowy Wypoczynek"
+                                oninput="updateHeroContent('title', this.value)">
+                        </div>
+                        <div class="form-group">
+                            <label>Podtytuł</label>
+                            <input type="text" id="hero-subtitle" placeholder="Np. W sercu gór"
+                                oninput="updateHeroContent('subtitle', this.value)">
+                        </div>
+                        <div class="form-group">
+                            <label>Opis Obiektu</label>
+                            <textarea id="property-desc" rows="4" placeholder="Opisz swój obiekt..."
+                                oninput="updateHeroContent('description', this.value)"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Zdjęcie tła (URL)</label>
+                            <input type="text" id="hero-image" placeholder="https://..."
+                                onchange="updateHeroContent('image', this.value)">
+                            <div class="image-preview-box" id="hero-image-preview"
+                                style="height: 100px; background-color: #eee; margin-top: 5px; background-size: cover; background-position: center; border-radius: 4px;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="settings-section collapsible collapsed">
                     <h4><i class="fas fa-swatchbook"></i> Wybierz szablon</h4>
                     <div class="settings-section-content">
@@ -220,6 +250,10 @@
                             <button class="gradient-category-tab" data-category="luxury"
                                 onclick="switchGradientCategory('luxury')">
                                 <i class="fas fa-crown"></i> Luksusowe
+                            </button>
+                            <button class="gradient-category-tab" data-category="seasonal"
+                                onclick="switchGradientCategory('seasonal')">
+                                <i class="fas fa-snowflake"></i> Sezonowe
                             </button>
                         </div>
 
@@ -406,6 +440,100 @@
                             </button>
                         </div>
                     </div>
+                </div>
+
+                <!-- Seasonal Gradients -->
+                <div class="gradients-grid hidden" data-category="seasonal">
+                    <!-- Winter -->
+                    <button class="gradient-btn" data-gradient="arctic-frost" onclick="setGradient('arctic-frost')"
+                        title="Arktyczny Mróz">
+                        <span style="background:linear-gradient(135deg, #e0f7fa 0%, #80deea 50%, #4dd0e1 100%)"></span>
+                    </button>
+                    <button class="gradient-btn" data-gradient="polar-night" onclick="setGradient('polar-night')"
+                        title="Noc Polarna">
+                        <span style="background:linear-gradient(135deg, #0a1628 0%, #1a3a5c 50%, #3f7cac 100%)"></span>
+                    </button>
+                    <button class="gradient-btn" data-gradient="frozen-lake" onclick="setGradient('frozen-lake')"
+                        title="Zamarznięte Jezioro">
+                        <span style="background:linear-gradient(135deg, #a8d8ea 0%, #aa96da 50%, #fcbad3 100%)"></span>
+                    </button>
+                    <button class="gradient-btn" data-gradient="winter-forest" onclick="setGradient('winter-forest')"
+                        title="Zimowy Las">
+                        <span style="background:linear-gradient(135deg, #1e3d31 0%, #2e5848 50%, #a8d5ba 100%)"></span>
+                    </button>
+                    <button class="gradient-btn" data-gradient="nordic-lights" onclick="setGradient('nordic-lights')"
+                        title="Nordyckie Światła">
+                        <span style="background:linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)"></span>
+                    </button>
+                    <button class="gradient-btn" data-gradient="snowstorm" onclick="setGradient('snowstorm')"
+                        title="Burza Śnieżna">
+                        <span style="background:linear-gradient(135deg, #e6e9f0 0%, #c1c8d4 50%, #9ba4b5 100%)"></span>
+                    </button>
+                    <button class="gradient-btn" data-gradient="ice-cave" onclick="setGradient('ice-cave')"
+                        title="Lodowa Jaskinia">
+                        <span style="background:linear-gradient(135deg, #00d4ff 0%, #0099cc 50%, #007acc 100%)"></span>
+                    </button>
+                    <button class="gradient-btn" data-gradient="frosty-morning" onclick="setGradient('frosty-morning')"
+                        title="Mroźny Poranek">
+                        <span style="background:linear-gradient(135deg, #e8f4fc 0%, #d1e8ff 50%, #b8d4f0 100%)"></span>
+                    </button>
+                    <button class="gradient-btn" data-gradient="glacial" onclick="setGradient('glacial')"
+                        title="Lodowiec">
+                        <span style="background:linear-gradient(135deg, #134e5e 0%, #71b280 50%, #88d8b0 100%)"></span>
+                    </button>
+                    <button class="gradient-btn" data-gradient="christmas" onclick="setGradient('christmas')"
+                        title="Świąteczny">
+                        <span style="background:linear-gradient(135deg, #c41e3a 0%, #1a472a 50%, #d4af37 100%)"></span>
+                    </button>
+                    <!-- Other Seasons -->
+                    <button class="gradient-btn" data-gradient="autumn-leaves" onclick="setGradient('autumn-leaves')"
+                        title="Jesienne Liście">
+                        <span style="background:linear-gradient(135deg, #d4521e 0%, #bf820d 50%, #6b4423 100%)"></span>
+                    </button>
+                    <button class="gradient-btn" data-gradient="harvest" onclick="setGradient('harvest')"
+                        title="Zbiory">
+                        <span style="background:linear-gradient(135deg, #f4a020 0%, #e67e22 50%, #d35400 100%)"></span>
+                    </button>
+                    <button class="gradient-btn" data-gradient="spring-bloom" onclick="setGradient('spring-bloom')"
+                        title="Wiosenny Rozkwit">
+                        <span style="background:linear-gradient(135deg, #ffecd2 0%, #fcb69f 50%, #ee9ca7 100%)"></span>
+                    </button>
+                    <button class="gradient-btn" data-gradient="summer-sunset" onclick="setGradient('summer-sunset')"
+                        title="Letni Zachód">
+                        <span style="background:linear-gradient(135deg, #fa709a 0%, #fee140 50%, #ff9a8b 100%)"></span>
+                    </button>
+                    <button class="gradient-btn" data-gradient="tropical-paradise"
+                        onclick="setGradient('tropical-paradise')" title="Tropikalny Raj">
+                        <span style="background:linear-gradient(135deg, #00c9ff 0%, #92fe9d 50%, #ffeb3b 100%)"></span>
+                    </button>
+                    <button class="gradient-btn" data-gradient="mountain-dawn" onclick="setGradient('mountain-dawn')"
+                        title="Górski Świt">
+                        <span style="background:linear-gradient(135deg, #654ea3 0%, #eaafc8 50%, #ff9966 100%)"></span>
+                    </button>
+                    <button class="gradient-btn" data-gradient="ocean-breeze" onclick="setGradient('ocean-breeze')"
+                        title="Morska Bryza">
+                        <span style="background:linear-gradient(135deg, #2193b0 0%, #6dd5ed 50%, #a8edea 100%)"></span>
+                    </button>
+                    <button class="gradient-btn" data-gradient="forest-mist" onclick="setGradient('forest-mist')"
+                        title="Leśna Mgła">
+                        <span style="background:linear-gradient(135deg, #5d8a66 0%, #96bb98 50%, #c8e6c9 100%)"></span>
+                    </button>
+                    <button class="gradient-btn" data-gradient="desert-dusk" onclick="setGradient('desert-dusk')"
+                        title="Pustynny Zmierzch">
+                        <span style="background:linear-gradient(135deg, #d4a373 0%, #bc6c25 50%, #1a1a2e 100%)"></span>
+                    </button>
+                    <button class="gradient-btn" data-gradient="lavender-fields"
+                        onclick="setGradient('lavender-fields')" title="Pola Lawendy">
+                        <span style="background:linear-gradient(135deg, #e8d5e8 0%, #c8a2c8 50%, #9966cc 100%)"></span>
+                    </button>
+                    <button class="gradient-btn" data-gradient="rainy-day" onclick="setGradient('rainy-day')"
+                        title="Deszczowy Dzień">
+                        <span style="background:linear-gradient(135deg, #616161 0%, #9bc5c3 50%, #c5e1e7 100%)"></span>
+                    </button>
+                    <button class="gradient-btn" data-gradient="golden-hour" onclick="setGradient('golden-hour')"
+                        title="Złota Godzina">
+                        <span style="background:linear-gradient(135deg, #f7971e 0%, #ffd200 50%, #ff8c00 100%)"></span>
+                    </button>
                 </div>
 
                 <!-- Toggle efektów hover -->
@@ -607,6 +735,8 @@
                         </label>
                     </div>
                 </div>
+
+
 
                 <div class="settings-section collapsible">
                     <h4><i class="fas fa-puzzle-piece"></i> Sekcje</h4>

@@ -333,6 +333,40 @@ function initBuilder(recommendation) {
 
     // Initialize preview
     Preview.init();
+
+    // ============================================
+    // SYNC UI WITH STATE (Phase D & E)
+    // ============================================
+
+    // 1. Hero Content
+    if (appState.sectionContent?.intro) {
+        if (appState.sectionContent.intro.title) {
+            document.getElementById('hero-title').value = appState.sectionContent.intro.title;
+        }
+        if (appState.sectionContent.intro.subtitle) {
+            document.getElementById('hero-subtitle').value = appState.sectionContent.intro.subtitle;
+        }
+        if (appState.sectionContent.intro.description) {
+            document.getElementById('property-desc').value = appState.sectionContent.intro.description;
+        }
+    }
+
+    // 2. Main Image
+    if (appState.globalSettings.mainImage) {
+        const imgUrl = appState.globalSettings.mainImage;
+        document.getElementById('hero-image').value = imgUrl;
+        const previewEl = document.getElementById('hero-image-preview');
+        if (previewEl) {
+            previewEl.style.backgroundImage = `url('${imgUrl}')`;
+        }
+    }
+
+    // 3. Atmospheric Effects UI
+    const currentEffect = appState.effectsSettings.atmosphericEffect || 'none';
+    const effectRadio = document.querySelector(`input[name="atmospheric-effect"][value="${currentEffect}"]`);
+    if (effectRadio) {
+        effectRadio.checked = true;
+    }
 }
 
 function renderSectionsChecklist() {
@@ -1743,6 +1777,37 @@ function setAtmosphericEffect(effectType) {
 }
 
 window.setAtmosphericEffect = setAtmosphericEffect;
+
+// ============================================
+// MAIN CONTENT UPDATES
+// ============================================
+function updateHeroContent(field, value) {
+    // Ensure structure exists
+    if (!appState.sectionContent) appState.sectionContent = {};
+    if (!appState.sectionContent.intro) appState.sectionContent.intro = {};
+
+    // Update specific field
+    if (field === 'title') {
+        appState.sectionContent.intro.title = value;
+    } else if (field === 'subtitle') {
+        appState.sectionContent.intro.subtitle = value;
+    } else if (field === 'description') {
+        appState.sectionContent.intro.description = value;
+    } else if (field === 'image') {
+        appState.globalSettings.mainImage = value;
+        // Update preview thumbnail
+        const previewEl = document.getElementById('hero-image-preview');
+        if (previewEl) {
+            previewEl.style.backgroundImage = `url('${value}')`;
+        }
+    }
+
+    console.log(`✏️ Updated hero ${field}:`, value);
+    Preview.debouncedRender();
+}
+
+window.updateHeroContent = updateHeroContent;
+
 
 
 // ============================================

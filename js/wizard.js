@@ -239,6 +239,67 @@ const WIZARD_STEPS = [
     }
 ];
 
+// Defaults based on property type
+const PROPERTY_DEFAULTS = {
+    'hotel-5': {
+        effect: 'particles',
+        gradient: 'royal',
+        mainImage: 'https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
+        title: 'Luksus na jaki zasługujesz',
+        subtitle: 'Wyjątkowy hotel 5-gwiazdkowy'
+    },
+    'hotel-4': {
+        effect: 'none',
+        gradient: 'steel',
+        mainImage: 'https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
+        title: 'Komfort w sercu miasta',
+        subtitle: 'Idealny dla biznesu i wypoczynku'
+    },
+    'resort': {
+        effect: 'sunrays',
+        gradient: 'tropical-paradise',
+        mainImage: 'https://images.pexels.com/photos/189296/pexels-photo-189296.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
+        title: 'Twój Raj na Ziemi',
+        subtitle: 'Zrelaksuj się w naszym resorcie'
+    },
+    'apartments': {
+        effect: 'none',
+        gradient: 'modern',
+        mainImage: 'https://images.pexels.com/photos/271618/pexels-photo-271618.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
+        title: 'Twój drugi dom',
+        subtitle: 'Nowoczesne apartamenty'
+    },
+    'glamping': {
+        effect: 'fireflies',
+        gradient: 'forest',
+        mainImage: 'https://images.pexels.com/photos/2398220/pexels-photo-2398220.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
+        title: 'Noc pod gwiazdami',
+        subtitle: 'Luksusowy kemping w naturze'
+    },
+    'chalet': {
+        effect: 'snow',
+        gradient: 'winter-forest',
+        mainImage: 'https://images.pexels.com/photos/730256/pexels-photo-730256.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
+        title: 'Górski Klimat',
+        subtitle: 'Przytulny domek w górach'
+    },
+    'villa': {
+        effect: 'none',
+        gradient: 'champagne',
+        mainImage: 'https://images.pexels.com/photos/53610/large-home-residential-house-architecture-53610.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
+        title: 'Ekskluzywna Willa',
+        subtitle: 'Prywatność i komfort'
+    },
+    'bnb': {
+        effect: 'particles',
+        gradient: 'cozy',
+        mainImage: 'https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
+        title: 'Domowa Atmosfera',
+        subtitle: 'Bed & Breakfast'
+    }
+    // Add more if needed
+};
+
 // Wizard state
 let wizardState = {
     currentStep: 0,
@@ -439,6 +500,39 @@ function finishWizard() {
                 appState.effectsSettings.useGradients = false;
             }
         }
+    }
+
+    // Apply defaults based on property type
+    const propertyType = wizardState.answers['property-type'];
+    if (propertyType && PROPERTY_DEFAULTS[propertyType]) {
+        const defaults = PROPERTY_DEFAULTS[propertyType];
+
+        // 1. Atmospheric Effect
+        if (defaults.effect && !appState.effectsSettings.atmosphericEffect) {
+            appState.effectsSettings.atmosphericEffect = defaults.effect;
+        }
+
+        // 2. Gradient (if not set by palette or allows override if palette is generic)
+        // If palette is generic (like 'warm'), and property suggests 'tropical-paradise', maybe we verify user intent?
+        // For now, if no gradient is set or standard palette, preserve user choice. 
+        // But if user skipped palette or we want to suggest a better one:
+        if (appState.effectsSettings.gradientPreset === 'none' && defaults.gradient) {
+            appState.effectsSettings.gradientPreset = defaults.gradient;
+            appState.effectsSettings.useGradients = true;
+        }
+
+        // 3. Main Image
+        if (defaults.mainImage) {
+            appState.globalSettings.mainImage = defaults.mainImage;
+        }
+
+        // 4. Content
+        if (!appState.sectionContent) appState.sectionContent = {};
+        if (!appState.sectionContent.intro) appState.sectionContent.intro = {};
+        if (defaults.title) appState.sectionContent.intro.title = defaults.title;
+        if (defaults.subtitle) appState.sectionContent.intro.subtitle = defaults.subtitle;
+
+        console.log(`Applied defaults for ${propertyType}:`, defaults);
     }
 
     // Store wizard data
