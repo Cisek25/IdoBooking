@@ -1094,8 +1094,10 @@ async function generateCode() {
             let text = await res.text();
             // Minify: Remove comments and trim whitespace to save space in CMS
             effectsLib = text
-                .replace(/\/\*[\s\S]*?\*\/|([^\\:]|^)\/\/.*$/gm, '$1') // Remove comments
-                .replace(/^\s*[\r\n]/gm, '') // Remove empty lines
+                .replace(/\/\*[\s\S]*?\*\//g, '')     // Remove block comments
+                .replace(/\/\/.*$/gm, '')            // Remove line comments
+                .replace(/^\s*[\r\n]/gm, '')         // Remove empty lines
+                .replace(/\s+/g, ' ')                // Collapse whitespace
                 .trim();
         } else {
             console.warn('Failed to load visual-effects.js');
