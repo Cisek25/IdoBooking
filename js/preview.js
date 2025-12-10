@@ -177,6 +177,28 @@ const Preview = {
                 gs: Math.random() * 0.03 + 0.02
             });
         }
+    } else if (effect === 'wind') {
+        for (var i = 0; i < 60; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                len: Math.random() * 100 + 50,
+                speed: (Math.random() * 15 + 10),
+                o: Math.random() * 0.2 + 0.05,
+                thickness: Math.random() > 0.9 ? 2 : 1
+            });
+            if (Math.random() > 0.5) particles[i].x = -particles[i].len;
+        }
+    } else if (effect === 'storm') {
+        for (var i = 0; i < 300; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                len: Math.random() * 30 + 15,
+                sy: Math.random() * 15 + 20,
+                o: Math.random() * 0.3 + 0.2
+            });
+        }
     } else if (effect === 'particles') {
         for (var i = 0; i < 50; i++) {
             particles.push({
@@ -330,7 +352,49 @@ const Preview = {
                 if (p.x < 0 || p.x > canvas.width) p.sx *= -1;
                 if (p.y < 0 || p.y > canvas.height) p.sy *= -1;
             });
-        } else if (effect === 'particles') {
+        } else if (effect === 'wind') {
+        particles.forEach(function(p) {
+            var grad = ctx.createLinearGradient(p.x, p.y, p.x + p.len, p.y);
+            grad.addColorStop(0, 'rgba(255,255,255,0)');
+            grad.addColorStop(0.5, 'rgba(255,255,255,' + p.o + ')');
+            grad.addColorStop(1, 'rgba(255,255,255,0)');
+            ctx.fillStyle = grad; // Use fill since strokeStyle with gradient can be tricky in some contexts, but usually OK.
+            // Actually reusing visual-effects approach: stroke
+            ctx.strokeStyle = grad;
+            ctx.lineWidth = p.thickness;
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(p.x + p.len, p.y);
+            ctx.stroke();
+            
+            p.x += p.speed;
+            p.y += Math.sin(Date.now() / 500 + p.x / 100) * 0.5;
+            if (p.x > canvas.width) {
+                p.x = -p.len - Math.random() * 100;
+                p.y = Math.random() * canvas.height;
+            }
+        });
+    } else if (effect === 'storm') {
+        // Lightning
+        if (Math.random() < 0.02) {
+            ctx.fillStyle = 'rgba(255, 255, 255, ' + (Math.random() * 0.3 + 0.1) + ')';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+        // Rain
+        ctx.strokeStyle = 'rgba(150,170,200,0.6)';
+        ctx.lineWidth = 1;
+        particles.forEach(function(p) {
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(p.x - 5, p.y + p.len);
+            ctx.globalAlpha = p.o;
+            ctx.stroke();
+            p.y += p.sy;
+            p.x -= 5;
+            if (p.y > canvas.height) { p.y = -p.len; p.x = Math.random() * (canvas.width + 200); }
+        });
+        ctx.globalAlpha = 1;
+    } else if (effect === 'particles') {
             particles.forEach(function(p) {
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
