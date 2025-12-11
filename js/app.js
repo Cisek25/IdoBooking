@@ -217,6 +217,20 @@ const appState = {
         cta: 'gradient',
         social: 'light',
         partners: 'white'
+    },
+    // ============================================
+    // OFFERS PAGE SETTINGS (for /offers subpage styling)
+    // ============================================
+    offersSettings: {
+        enabled: false,
+        filtersCollapsible: true,
+        filtersModern: true,
+        cardsHover: true,
+        cardsRounded: true,
+        cardsShadow: true,
+        buttonsRounded: true,
+        buttonsGradient: false,
+        background: 'white'
     }
 };
 
@@ -261,7 +275,7 @@ function setupEventListeners() {
     });
 
     // 8. Generate Code
-    document.getElementById('btn-generate-code').addEventListener('click', generateCode);
+    document.getElementById('btn-generate-code')?.addEventListener('click', generateCode);
     // Builder events (will be active after wizard)
     document.getElementById('btn-add-object')?.addEventListener('click', addNewObject);
     document.getElementById('btn-generate')?.addEventListener('click', generateCode);
@@ -1127,7 +1141,29 @@ async function generateCode() {
     };
     const head = TemplateEngine.generateHead(settings);
     const sections = TemplateEngine.generateSections(settings, objects, enabledSections);
-    const styles = CSSEngine.generate(settings, appState.effectsSettings, appState.sectionBackgrounds);
+
+    // Generate main CSS
+    let styles = '';
+    try {
+        styles = CSSEngine.generate(settings, appState.effectsSettings, appState.sectionBackgrounds);
+    } catch (e) {
+        console.error('Error generating main CSS:', e);
+        styles = '/* CSS generation error: ' + e.message + ' */';
+    }
+
+    // Generate /offers page CSS if enabled
+    let offersCSS = '';
+    try {
+        offersCSS = CSSEngine.generateOffersPageCSS(settings, appState.effectsSettings, appState.offersSettings);
+        if (offersCSS) {
+            styles += `
+
+${offersCSS}`;
+        }
+    } catch (e) {
+        console.error('Error generating /offers CSS:', e);
+    }
+
     const scripts = generateScriptsFile(effectsLib);
 
     // Generate subpage (body-only content)
@@ -1881,6 +1917,28 @@ function updateHeroContent(field, value) {
 window.updateHeroContent = updateHeroContent;
 
 
+// ============================================
+// OFFERS PAGE STYLING
+// ============================================
+function toggleOffersPageStyling(enabled) {
+    appState.offersSettings.enabled = enabled;
+
+    // Show/hide options
+    const optionsEl = document.getElementById('offers-options');
+    if (optionsEl) {
+        optionsEl.style.display = enabled ? 'block' : 'none';
+    }
+
+    console.log(`📋 Offers page styling ${enabled ? 'enabled' : 'disabled'}`);
+}
+
+function updateOffersSetting(setting, value) {
+    appState.offersSettings[setting] = value;
+    console.log(`📋 Updated offers setting ${setting}:`, value);
+}
+
+window.toggleOffersPageStyling = toggleOffersPageStyling;
+window.updateOffersSetting = updateOffersSetting;
 
 // ============================================
 // COLLAPSIBLE SECTIONS
@@ -1895,6 +1953,16 @@ function initCollapsibleSections() {
         });
     });
 }
+
+// Toggle FAQ Editor Panel
+function toggleFaqEditor() {
+    const panel = document.getElementById('faq-editor-panel');
+    if (panel) {
+        panel.classList.toggle('collapsed');
+    }
+}
+
+window.toggleFaqEditor = toggleFaqEditor;
 
 // Setup fullscreen button listener and collapsible sections
 document.addEventListener('DOMContentLoaded', () => {

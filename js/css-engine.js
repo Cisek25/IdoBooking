@@ -2101,8 +2101,599 @@ ${effectsSettings.hoverEffects?.flipCards ? '' : `
 `;
     },
 
+    // Generate CSS for /offers subpage
+    generateOffersPageCSS(settings, effectsSettings = {}, offersSettings = {}) {
+        // Defensive color handling - ensure all colors are valid
+        const defaultColors = {
+            primary: '#1A365D',
+            secondary: '#C9A227',
+            accent: '#00B894'
+        };
+        const colors = {
+            primary: (settings.colors && settings.colors.primary) || defaultColors.primary,
+            secondary: (settings.colors && settings.colors.secondary) || defaultColors.secondary,
+            accent: (settings.colors && settings.colors.accent) || defaultColors.accent
+        };
+
+        if (!offersSettings || !offersSettings.enabled) return '';
+
+        const gradientPreset = effectsSettings.gradientPreset || 'none';
+        const useGradients = effectsSettings.useGradients !== false && gradientPreset !== 'none';
+        const gradientValue = this.gradientPresets[gradientPreset] || this.gradientPresets['sunset'];
+
+        let css = `
+/* ============================================
+   IDOBOOKING /OFFERS PAGE STYLES
+   Wklej w panelu CMS → Custom CSS
+   (działa globalnie dla całej strony)
+   Wygenerowano przez IdoBooking AI Generator v4.0
+   ============================================ */
+
+/* --- CSS Variables for /offers --- */
+body {
+    --offers-primary: ${colors.primary};
+    --offers-primary-light: ${this.lighten(colors.primary, 15)};
+    --offers-secondary: ${colors.secondary};
+    --offers-accent: ${colors.accent};
+    --offers-radius: ${offersSettings.cardsRounded !== false ? '12px' : '4px'};
+    --offers-shadow: ${offersSettings.cardsShadow !== false ? '0 4px 20px rgba(0,0,0,0.1)' : 'none'};
+}
+`;
+
+        // Background styles
+        if (offersSettings.background === 'light') {
+            css += `
+/* Page Background - Light */
+body {
+    background: #f8f9fa !important;
+}
+`;
+        } else if (offersSettings.background === 'gradient' && useGradients) {
+            css += `
+/* Page Background - Gradient */
+body {
+    background: linear-gradient(180deg, #ffffff 0%, ${this.lighten(colors.primary, 45)} 100%) !important;
+    min-height: 100vh;
+}
+`;
+        } else if (offersSettings.background === 'pattern') {
+            css += `
+/* Page Background - Pattern */
+body {
+    background: 
+        repeating-linear-gradient(
+            45deg,
+            #f8f9fa,
+            #f8f9fa 10px,
+            #ffffff 10px,
+            #ffffff 20px
+        ) !important;
+}
+`;
+        }
+
+        // Modern filter styles
+        if (offersSettings.filtersModern !== false) {
+            css += `
+/* ============================================
+   MODERN FILTER PANEL
+   ============================================ */
+
+/* Filter section container */
+[class*="filter"], 
+.sidebar,
+form[action*="offers"] {
+    background: #ffffff;
+    border-radius: var(--offers-radius);
+    padding: 20px;
+    box-shadow: var(--offers-shadow);
+    margin-bottom: 20px;
+}
+
+/* Filter headings */
+h3, h4, .filter-title,
+[class*="filter"] h3,
+[class*="filter"] h4 {
+    color: var(--offers-primary);
+    font-weight: 600;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--offers-secondary);
+}
+
+/* Checkbox styling */
+.checkbox,
+div[role="checkbox"],
+input[type="checkbox"] + label,
+.checkbox label {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    margin: 4px 0;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    background: #f8f9fa;
+}
+
+.checkbox:hover,
+div[role="checkbox"]:hover {
+    background: ${this.lighten(colors.primary, 45)};
+    transform: translateX(4px);
+}
+
+.checkbox[aria-checked="true"],
+div[role="checkbox"][aria-checked="true"],
+.checkbox.active {
+    background: ${this.lighten(colors.secondary, 30)} !important;
+    border-left: 3px solid var(--offers-secondary);
+}
+
+/* Custom checkbox appearance */
+input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--offers-primary);
+    border-radius: 4px;
+    margin-right: 10px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+input[type="checkbox"]:checked {
+    background: var(--offers-secondary);
+    border-color: var(--offers-secondary);
+}
+
+input[type="checkbox"]:checked::after {
+    content: "✓";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+}
+`;
+        }
+
+        // Collapsible filters
+        if (offersSettings.filtersCollapsible) {
+            css += `
+/* ============================================
+   COLLAPSIBLE FILTER SECTIONS
+   ============================================ */
+
+/* Filter panel and UDOGODNIENIA - make collapsible */
+.filter-section,
+[class*="filter-group"],
+.checkbox-group,
+[class*="panel-filter"],
+[class*="accordion"] {
+    position: relative;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    overflow: hidden;
+    background: #fff;
+}
+
+/* Clickable header for collapse */
+.filter-section h4,
+.filter-section h3,
+[class*="panel-filter"] > div:first-child,
+.checkbox-group > h3,
+.checkbox-group > h4,
+[class*="accordion-header"],
+.accordion-button {
+    cursor: pointer;
+    padding: 14px 18px;
+    margin: 0;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--offers-primary);
+    transition: all 0.2s ease;
+}
+
+.filter-section h4:hover,
+.filter-section h3:hover {
+    background: #f0f4f8;
+}
+
+/* Collapse indicator arrow */
+.filter-section h4::after,
+.filter-section h3::after,
+.accordion-button::after {
+    content: "▼";
+    font-size: 10px;
+    color: var(--offers-primary);
+    transition: transform 0.3s ease;
+    opacity: 0.7;
+}
+
+.filter-section.collapsed h4::after,
+.filter-section.collapsed h3::after,
+.accordion-button.collapsed::after {
+    transform: rotate(-90deg);
+}
+
+/* Hidden content when collapsed */
+.filter-section.collapsed > *:not(h4):not(h3),
+.collapsed .checkbox-list,
+.collapsed .filter-options {
+    display: none;
+}
+
+/* AMENITIES - smaller font size for compact display */
+.checkbox label,
+.checkbox-group label,
+[class*="filter"] label,
+input[type="checkbox"] + label,
+div[role="checkbox"] {
+    font-size: 13px !important;
+    padding: 8px 12px !important;
+    line-height: 1.4;
+}
+
+/* Smaller checkbox icons */
+.checkbox input[type="checkbox"],
+input[type="checkbox"] {
+    width: 16px !important;
+    height: 16px !important;
+    margin-right: 8px !important;
+}
+
+/* Add JS-based collapse toggle script hint */
+/* To enable: document.querySelectorAll('.filter-section h4, .filter-section h3').forEach(h => h.onclick = () => h.parentElement.classList.toggle('collapsed')); */
+`;
+        }
+
+        // Card hover effects
+        if (offersSettings.cardsHover !== false) {
+            css += `
+/* ============================================
+   OFFER CARDS - HOVER EFFECTS
+   ============================================ */
+
+/* Offer card container */
+.object-icon,
+.offer-card,
+.offer-item,
+[class*="offer"],
+[class*="object-preview"],
+a[href*="/offers/"] {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Card images - simple styling, no border/outline */
+.object-icon img,
+.offer-card img,
+[class*="offer"] img {
+    border-radius: 0 !important;
+    transition: transform 0.4s ease;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.object-icon:hover img,
+.offer-card:hover img,
+[class*="offer"]:hover img {
+    transform: scale(1.01);
+}
+
+/* Card content containers */
+.offer-details,
+.offer-content,
+.offer-info {
+    padding: 15px;
+    background: #ffffff;
+    border-radius: 0 0 var(--offers-radius) var(--offers-radius);
+}
+
+/* Hover lift effect on whole cards */
+[class*="col-"][class*="offer"],
+[class*="col-md-"] > [class*="offer"] {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+[class*="col-"][class*="offer"]:hover,
+[class*="col-md-"] > [class*="offer"]:hover {
+    transform: translateY(-8px);
+}
+`;
+        }
+
+        // Card styling
+        if (offersSettings.cardsRounded !== false || offersSettings.cardsShadow !== false) {
+            css += `
+/* ============================================
+   OFFER CARDS - GENERAL STYLING
+   ============================================ */
+
+/* Card containers - NO BORDER/OUTLINE */
+.offer-card,
+.object-card,
+[class*="offer-item"],
+.offers-container {
+    background: #ffffff;
+    border-radius: var(--offers-radius);
+    box-shadow: var(--offers-shadow);
+    overflow: hidden;
+    border: none !important;
+    outline: none !important;
+}
+
+/* Price styling */
+.price,
+.offer-price,
+[class*="price"] {
+    color: var(--offers-primary);
+    font-weight: 700;
+    font-size: 1.25em;
+}
+
+/* Price label */
+.price-label,
+.from-price {
+    color: #6c757d;
+    font-size: 0.85em;
+}
+
+/* Offer title links */
+.offer-title,
+.offer-name,
+a[href*="/offers/"] h3,
+a[href*="/offers/"] h4 {
+    color: var(--offers-primary);
+    font-weight: 600;
+    transition: color 0.2s ease;
+}
+
+.offer-title:hover,
+a[href*="/offers/"]:hover h3,
+a[href*="/offers/"]:hover h4 {
+    color: var(--offers-secondary);
+}
+
+/* RESET h2 titles - remove any background/outline */
+.offers-container h2,
+.offers-container h2 a,
+.accommodation-rest h2,
+.accommodation-rest h2 a,
+h2 a[href*="/offer/"] {
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    color: inherit;
+    text-decoration: none;
+}
+`;
+        }
+
+        // Button styling
+        css += `
+/* ============================================
+   BUTTONS - FIXED FOR IDOBOOKING STRUCTURE
+   Structure: <a><span class="btn">SZCZEGÓŁY</span></a>
+   ============================================ */
+
+/* RESET outer link wrapper - make transparent */
+.accommodation-buttons a,
+a[aria-label*="szczegóły"],
+a[aria-label*="Szczegóły"],
+a[href*="/offer/"] {
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    text-decoration: none !important;
+    display: inline-block;
+}
+
+/* Style ONLY the inner .btn span - single color */
+.accommodation-buttons .btn,
+.accommodation-buttons span.btn,
+a[aria-label*="szczegóły"] .btn,
+a[aria-label*="Szczegóły"] .btn,
+a[href*="/offer/"] .btn,
+span.btn {
+    ${offersSettings.buttonsRounded !== false ? 'border-radius: 25px !important;' : 'border-radius: 4px !important;'}
+    padding: 12px 24px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.85em;
+    transition: all 0.3s ease;
+    border: none !important;
+    outline: none !important;
+    cursor: pointer;
+    display: inline-block;
+    ${offersSettings.buttonsGradient && useGradients
+                ? `background: ${gradientValue} !important;`
+                : `background: var(--offers-primary) !important;`}
+    color: #ffffff !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* Hover on the span.btn only */
+.accommodation-buttons a:hover .btn,
+a[aria-label*="szczegóły"]:hover .btn,
+a[aria-label*="Szczegóły"]:hover .btn,
+a[href*="/offer/"]:hover .btn,
+span.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    ${offersSettings.buttonsGradient
+                ? 'filter: brightness(1.1);'
+                : `background: var(--offers-secondary) !important; color: #1a1a1a !important;`}
+}
+
+/* General button styling for forms */
+button[type="submit"],
+input[type="submit"],
+#filters_submit {
+    ${offersSettings.buttonsRounded !== false ? 'border-radius: 25px !important;' : 'border-radius: 4px !important;'}
+    padding: 12px 24px !important;
+    font-weight: 600 !important;
+    border: none !important;
+    outline: none !important;
+    cursor: pointer;
+    ${offersSettings.buttonsGradient && useGradients
+                ? `background: ${gradientValue} !important;`
+                : `background: var(--offers-primary) !important;`}
+    color: #ffffff !important;
+    transition: all 0.3s ease;
+}
+
+button[type="submit"]:hover,
+#filters_submit:hover {
+    transform: translateY(-2px);
+    ${offersSettings.buttonsGradient
+                ? 'filter: brightness(1.1);'
+                : `background: var(--offers-secondary) !important; color: #1a1a1a !important;`}
+}
+`;
+
+        // Navigation styling
+        css += `
+/* ============================================
+   NAVIGATION - CONSISTENT WITH MAIN PAGE
+   ============================================ */
+
+/* Logo - remove shadow/outline */
+.navbar-brand img,
+.logo img,
+header img[alt*="logo"],
+header img[alt*="Logo"] {
+    box-shadow: none !important;
+    border: none !important;
+    background: transparent !important;
+    filter: none !important;
+    transition: transform 0.3s ease;
+}
+
+.navbar-brand:hover img {
+    transform: scale(1.05);
+}
+
+.nav-link {
+    color: var(--offers-primary);
+    font-weight: 500;
+    transition: color 0.2s ease;
+    position: relative;
+}
+
+.nav-link:hover {
+    color: var(--offers-secondary);
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--offers-secondary);
+    transition: width 0.3s ease;
+}
+
+.nav-link:hover::after {
+    width: 100%;
+}
+`;
+
+        // Map container styling - simple, don't break original
+        css += `
+/* ============================================
+   MAP CONTAINER
+   ============================================ */
+
+#map_container,
+.leaflet-container {
+    border-radius: var(--offers-radius);
+    overflow: hidden;
+    margin: 20px 0;
+}
+`;
+
+        // Footer enhancements
+        css += `
+/* ============================================
+   FOOTER ENHANCEMENTS
+   ============================================ */
+
+#backTop {
+    background: var(--offers-primary);
+    color: #ffffff;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+#backTop:hover {
+    background: var(--offers-secondary);
+    transform: translateY(-4px);
+}
+`;
+
+        // Responsive improvements
+        css += `
+/* ============================================
+   RESPONSIVE IMPROVEMENTS
+   ============================================ */
+
+@media (max-width: 768px) {
+    .checkbox,
+    div[role="checkbox"] {
+        padding: 12px;
+    }
+    
+    .btn,
+    #filters_submit {
+        width: 100%;
+        padding: 14px;
+    }
+    
+    [class*="offer"] img {
+        /* On mobile, cards may stack vertically so round top corners */
+        border-radius: var(--offers-radius) var(--offers-radius) 0 0 !important;
+    }
+}
+`;
+
+        return css;
+    },
+
     // Color utilities
     lighten(hex, percent) {
+        if (!hex || typeof hex !== 'string') {
+            console.warn('lighten called with invalid hex:', hex);
+            return '#ffffff';
+        }
         const num = parseInt(hex.replace('#', ''), 16);
         const amt = Math.round(2.55 * percent);
         const R = Math.min(255, (num >> 16) + amt);
@@ -2112,6 +2703,10 @@ ${effectsSettings.hoverEffects?.flipCards ? '' : `
     },
 
     darken(hex, percent) {
+        if (!hex || typeof hex !== 'string') {
+            console.warn('darken called with invalid hex:', hex);
+            return '#000000';
+        }
         const num = parseInt(hex.replace('#', ''), 16);
         const amt = Math.round(2.55 * percent);
         const R = Math.max(0, (num >> 16) - amt);

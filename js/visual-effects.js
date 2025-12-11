@@ -296,21 +296,23 @@ const VisualEffects = {
     drawStorm() {
         this.drawRain(); // Reuse rain logic
 
-        // Lightning Logic
+        // Lightning Logic - less frequent and less intense
         this.lightningTimer++;
         if (this.lightningTimer > this.nextLightning) {
             this.isFlashing = true;
-            this.flashOpacity = 0.8 * (Math.min(this.intensity, 1.5));
+            // Much lower opacity for less jarring effect (max 0.3 instead of 0.8)
+            this.flashOpacity = 0.25 * (Math.min(this.intensity, 1.0));
             this.lightningTimer = 0;
-            // Less frequent with lower intensity
-            this.nextLightning = (Math.random() * 300 + 100) / this.intensity;
+            // Much less frequent lightning
+            this.nextLightning = (Math.random() * 600 + 400) / this.intensity;
         }
 
         if (this.isFlashing) {
             this.ctx.fillStyle = `rgba(255, 255, 255, ${this.flashOpacity})`;
             this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-            this.flashOpacity -= 0.1;
+            // Slower fade for smoother transition
+            this.flashOpacity -= 0.03;
             if (this.flashOpacity <= 0) {
                 this.isFlashing = false;
             }
