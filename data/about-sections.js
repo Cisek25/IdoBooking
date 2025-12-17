@@ -1,0 +1,791 @@
+// ============================================
+// ABOUT-SECTIONS.JS - Różne warianty sekcji "O nas"
+// ============================================
+
+const ABOUT_SECTION_VARIANTS = {
+    // ============================================
+    // HOTELE I PENSJONATY
+    // ============================================
+    'hotel-elegant': {
+        id: 'hotel-elegant',
+        name: 'Elegancki Hotel',
+        layout: 'split-left-image',
+        icon: 'fa-hotel',
+        stats: [
+            { number: '50+', label: 'pokoi' },
+            { number: '4.9', label: 'ocena' },
+            { number: '15', label: 'lat tradycji' }
+        ],
+        title: 'Elegancja i komfort w sercu miasta',
+        subtitle: 'Gdzie tradycja spotyka nowoczesność',
+        description: 'Nasz hotel to oaza spokoju, gdzie każdy detal został starannie przemyślany, by zapewnić Państwu niezapomniany pobyt. Połączenie klasycznej elegancji z nowoczesnymi udogodnieniami tworzy przestrzeń idealną zarówno dla podróży służbowych, jak i romantycznych weekendów.'
+    },
+
+    'hotel-family': {
+        id: 'hotel-family',
+        name: 'Rodzinny Pensjonat',
+        layout: 'split-right-image',
+        icon: 'fa-house-chimney',
+        stats: [
+            { number: '25', label: 'pokoi' },
+            { number: '100+', label: 'zadowolonych rodzin' },
+            { number: '5 min', label: 'do plaży' }
+        ],
+        title: 'Twój dom z dala od domu',
+        subtitle: 'Rodzinna atmosfera, niezapomniane wspomnienia',
+        description: 'Prowadzimy nasz pensjonat od trzech pokoleń, przekazując sobie nawzajem pasję do gościnności. U nas dzieci bawią się bezpiecznie na placu zabaw, rodzice relaksują się przy porannej kawie, a wieczorami wszyscy spotykają się przy ognisku.'
+    },
+
+    'hotel-luxury-spa': {
+        id: 'hotel-luxury-spa',
+        name: 'Luksusowe SPA',
+        layout: 'full-width',
+        icon: 'fa-spa',
+        stats: [
+            { number: '1000m²', label: 'strefy SPA' },
+            { number: '20+', label: 'zabiegów' },
+            { number: '24/7', label: 'obsługa' }
+        ],
+        title: 'Harmonia ciała i umysłu',
+        subtitle: 'Luksusowe zabiegi, kompletny relaks',
+        description: 'Zanurz się w świecie absolutnego relaksu. Nasza strefa SPA oferuje holistyczne podejście do wellness, łącząc starożytne techniki z nowoczesnymi terapiami. Każdy zabieg to podróż ku głębokiej odnowie.'
+    },
+
+    'hotel-business': {
+        id: 'hotel-business',
+        name: 'Business Hotel',
+        layout: 'cards-grid',
+        icon: 'fa-briefcase',
+        stats: [
+            { number: '5', label: 'sal konferencyjnych' },
+            { number: '150', label: 'miejsc' },
+            { number: 'Fiber', label: 'internet' }
+        ],
+        title: 'Profesjonalizm na każdym kroku',
+        subtitle: 'Idealne miejsce dla biznesu',
+        description: 'Rozumiemy potrzeby współczesnego biznesu. Nowoczesne sale konferencyjne, błyskawiczny internet, usługi concierge 24/7 i doskonała lokalizacja – wszystko, czego potrzeba, by Twoje spotkania biznesowe zakończyły się sukcesem.'
+    },
+
+    'hotel-romantic': {
+        id: 'hotel-romantic',
+        name: 'Romantyczna Ucieczka',
+        layout: 'asymmetric',
+        icon: 'fa-heart',
+        stats: [
+            { number: '12', label: 'apartamentów' },
+            { number: '∞', label: 'wspomnień' },
+            { number: '100%', label: 'prywatności' }
+        ],
+        title: 'Chwile tylko dla Was',
+        subtitle: 'Romantyczny pobyt pełen magii',
+        description: 'Stworzyliśmy miejsce, gdzie czas płynie wolniej, a każda chwila jest wyjątkowa. Kolacja przy świecach, prywatne jacuzzi, śniadanie do łóżka – odkryj na nowo siłę waszej miłości.'
+    },
+
+    // ============================================
+    // DODATKOWE HOTELE I PENSJONATY
+    // ============================================
+    'hotel-mountain-resort': {
+        id: 'hotel-mountain-resort',
+        name: 'Górski Resort',
+        layout: 'split-right-image',
+        icon: 'fa-mountain-sun',
+        stats: [
+            { number: '5★', label: 'standard' },
+            { number: 'Ski-in', label: 'ski-out' },
+            { number: 'SPA', label: '800m²' }
+        ],
+        title: 'Magia gór o każdej porze roku',
+        subtitle: 'Luksus w sercu Tatr',
+        description: 'Zimą prosto na stok, latem na szlaki. Nasza lokalizacja to marzenie każdego miłośnika gór. Po dniu pełnym wrażeń czeka SPA z panoramicznymi oknami.'
+    },
+
+    'pension-countryside': {
+        id: 'pension-countryside',
+        name: 'Wiejski Pensjonat',
+        layout: 'cards-grid',
+        icon: 'fa-tractor',
+        stats: [
+            { number: 'Śniadanie', label: 'ze swojego' },
+            { number: 'Zwierzęta', label: 'do karmienia' },
+            { number: 'Cisza', label: 'absolutna' }
+        ],
+        title: 'Wróć do natury',
+        subtitle: 'Autentyczna wieś, prawdziwe smaki',
+        description: 'Jajka od własnych kur, warzywa z ogrodu, mleko od sąsiada. Dzieci pokochają karmienie zwierząt, a dorośli ciszę i spokój. To prawdziwy odpoczynek.'
+    },
+
+    'hotel-wellness-retreat': {
+        id: 'hotel-wellness-retreat',
+        name: 'Wellness Retreat',
+        layout: 'full-width',
+        icon: 'fa-om',
+        stats: [
+            { number: 'Yoga', label: 'codziennie' },
+            { number: 'Detox', label: 'menu' },
+            { number: 'Medytacja', label: 'ogród' }
+        ],
+        title: 'Odnów ciało i umysł',
+        subtitle: 'Holistyczne podejście do zdrowia',
+        description: 'Zajęcia jogi o świcie, zdrowe posiłki, sesje medytacji w ogrodzie. Oferujemy kompleksowy program wellness, który przywróci harmonię i równowagę.'
+    },
+
+    'hotel-boutique-art': {
+        id: 'hotel-boutique-art',
+        name: 'Boutique Art Hotel',
+        layout: 'asymmetric',
+        icon: 'fa-paintbrush',
+        stats: [
+            { number: '12', label: 'unikalnych pokoi' },
+            { number: 'Galeria', label: 'sztuki' },
+            { number: 'Design', label: 'nagradzany' }
+        ],
+        title: 'Sztuka w każdym detalu',
+        subtitle: 'Gdzie każdy pokój to dzieło',
+        description: 'Każdy pokój zaprojektowany przez innego artystę. Ściany zdobią oryginalne dzieła sztuki. To nie hotel – to żywa galeria, w której możesz zamieszkać.'
+    },
+
+    'pension-lake-view': {
+        id: 'pension-lake-view',
+        name: 'Pensjonat nad Jeziorem',
+        layout: 'Split-left-image',
+        icon: 'fa-water',
+        stats: [
+            { number: 'Plaża', label: 'prywatna' },
+            { number: 'Kajaki', label: 'gratis' },
+            { number: 'Widoki', label: 'zapierające dech' }
+        ],
+        title: 'Pobudka z widokiem na taflę wody',
+        subtitle: 'Spokój i piękno każdego dnia',
+        description: 'Poranna kawa na pomoście, popołudniowy spływ kajakiem, wieczór przy ognisku nad brzegiem. Jezioro to nie tylko widok – to styl życia.'
+    },
+
+    'hotel-historic-palace': {
+        id: 'hotel-historic-palace',
+        name: 'Pałac Hotel',
+        layout: 'full-width',
+        icon: 'fa-crown',
+        stats: [
+            { number: 'XVIII w', label: 'zabytek' },
+            { number: 'Park', label: '10 ha' },
+            { number: 'Luksus', label: 'królewski' }
+        ],
+        title: 'Poczuj się jak w pałacu',
+        subtitle: 'Historia, elegancja, przepych',
+        description: 'Zabytkowy pałac otoczony parkiem. Oryginalne freski, kryształowe żyrandole, meble z epoki. Każdy pokój opowiada historię arystokratycznego życia.'
+    },
+
+    'hostel-social-hub': {
+        id: 'hostel-social-hub',
+        name: 'Social Hostel',
+        layout: 'cards-grid',
+        icon: 'fa-users',
+        stats: [
+            { number: 'Party', label: 'roof top' },
+            { number: 'Meet', label: 'new people' },
+            { number: '€', label: 'budget friendly' }
+        ],
+        title: 'Poznaj podróżników z całego świata',
+        subtitle: 'Więcej niż hostel - społeczność',
+        description: 'Wspólna kuchnia wspaniałych znajomości. Wieczory gier planszowych, warsztaty, wycieczki grupowe. Tu nie tylko nocujesz – tu przeżywasz przygodę i zyskujesz przyjaciół.'
+    },
+
+    'pension-wine-country': {
+        id: 'pension-wine-country',
+        name: 'Pensjonat Winnica',
+        layout: 'split-right-image',
+        icon: 'fa-wine-bottle',
+        stats: [
+            { number: 'Degustacje', label: 'codziennie' },
+            { number: 'Winnica', label: 'własna' },
+            { number: 'Relaks', label: 'toskański' }
+        ],
+        title: 'Smakuj życie pośród winnic',
+        subtitle: 'Gdzie wino to pasja',
+        description: 'Spacery po winnicy, degustacje win, kolacje w towarzystwie winiarz. Odkryj tajniki winiarstwa i zatrac się w pięknie toskańskich krajobrazów.'
+    },
+
+    'hotel-golf-club': {
+        id: 'hotel-golf-club',
+        name: 'Golf & Country Club',
+        layout: 'asymmetric',
+        icon: 'fa-golf-ball-tee',
+        stats: [
+            { number: '18', label: 'holes' },
+            { number: 'Pro', label: 'instructor' },
+            { number: 'Green', label: 'championship' }
+        ],
+        title: 'Raj dla miłośników golfa',
+        subtitle: 'Graj na poziomie mistrzów',
+        description: 'Profesjonalne pole golfowe z widokiem na góry. Instruktorzy PGA, najlepszy sprzęt, driving range. Po rundzie - drink w klubie XIX dołka.'
+    },
+
+    'pension-agritourism': {
+        id: 'pension-agritourism',
+        name: 'Agroturystyka Premium',
+        layout: 'split-left-image',
+        icon: 'fa-wheat-awn',
+        stats: [
+            { number: 'Farm', label: 'to table' },
+            { number: 'Ekologia', label: '100%' },
+            { number: 'Tradycja', label: 'rodzinna' }
+        ],
+        title: 'Prawdziwy smak wsi',
+        subtitle: 'Od pola prosto na stół',
+        description: 'Świeże warzywa z grządki na śniadanie, ser i masło własnej produkcji, mięso od lokalnego hodowcy. Poznaj życie na wsi i zatrac się w prostych przyjemnościach.'
+    },
+
+    // ============================================
+    // APARTAMENTY - 10 WARIANTÓW
+    // ============================================
+    'apt-modern-loft': {
+        id: 'apt-modern-loft',
+        name: 'Nowoczesny Loft',
+        layout: 'split-left-image',
+        icon: 'fa-building',
+        category: 'apartments',
+        stats: [
+            { number: '80m²', label: 'powierzchni' },
+            { number: '4K', label: 'Smart TV' },
+            { number: '5★', label: 'wyposażenie' }
+        ],
+        title: 'Przestrzeń, która inspiruje',
+        subtitle: 'Nowoczesny design, maksymalny komfort',
+        description: 'Nasz loft to idealne połączenie industrialnego charakteru z nowoczesnym designem. Wysokie sufity, otwarta przestrzeń i panoramiczne okna tworzą wyjątkową atmosferę. Pełna kuchnia pozwala na samodzielne przygotowywanie posiłków.'
+    },
+
+    'apt-seaside-villa': {
+        id: 'apt-seaside-villa',
+        name: 'Nadmorska Willa',
+        layout: 'full-width',
+        icon: 'fa-umbrella-beach',
+        category: 'apartments',
+        stats: [
+            { number: '150m²', label: 'przestrzeni' },
+            { number: '50m', label: 'do plaży' },
+            { number: '6', label: 'osób max' }
+        ],
+        title: 'Wakacje marzeń nad morzem',
+        subtitle: 'Twój prywatny raj przy plaży',
+        description: 'Obudź się z widokiem na morze i szumem fal. Nasza willa oferuje prywatny taras z leżakami, bezpośrednie zejście na plażę i w pełni wyposażoną kuchnię. Idealna dla rodzin szukających luksusowego wypoczynku.'
+    },
+
+    'apt-mountain-chalet': {
+        id: 'apt-mountain-chalet',
+        name: 'Górski Szalet',
+        layout: 'split-right-image',
+        icon: 'fa-mountain',
+        category: 'apartments',
+        stats: [
+            { number: '120m²', label: 'powierzchni' },
+            { number: 'Sauna', label: 'w apartamencie' },
+            { number: '360°', label: 'widok na góry' }
+        ],
+        title: 'Alpejski luksus w polskich górach',
+        subtitle: 'Kominek, sauna, góry za oknem',
+        description: 'Drewniany szalet z prawdziwym kominkiem, prywatną sauną i tarasem widokowym. Zimą prosto na stok, latem szlaki turystyczne dosłownie za progiem. Ciepło i przytulność na wyciągnięcie ręki.'
+    },
+
+    'apt-city-center': {
+        id: 'apt-city-center',
+        name: 'Centrum Miasta',
+        layout: 'cards-grid',
+        icon: 'fa-city',
+        category: 'apartments',
+        stats: [
+            { number: '60m²', label: 'nowoczesności' },
+            { number: '0 min', label: 'do atrakcji' },
+            { number: '24/7', label: 'check-in' }
+        ],
+        title: 'W sercu akcji',
+        subtitle: 'Wszystko na wyciągnięcie ręki',
+        description: 'Położony w ścisłym centrum, nasz apartament to baza wypadowa do odkrywania miasta. Restauracje, muzea, kluby – wszystko w zasięgu spaceru. Nowoczesne wnętrze z pełnym wyposażeniem dla maksymalnej wygody.'
+    },
+
+    'apt-lake-house': {
+        id: 'apt-lake-house',
+        name: 'Domek nad Jeziorem',
+        layout: 'asymmetric',
+        icon: 'fa-water',
+        category: 'apartments',
+        stats: [
+            { number: '100m²', label: 'spokoju' },
+            { number: 'Kajak', label: 'w cenie' },
+            { number: 'Pomost', label: 'prywatny' }
+        ],
+        title: 'Cisza, woda, natura',
+        subtitle: 'Twoja prywatna przystań',
+        description: 'Drewniany dom z własnym pomostem nad krystalicznie czystym jeziorem. Rano kawa na tarasie z widokiem na mgłę nad wodą, po południu pływanie kajakiem, wieczorem ognisko pod gwiazdami.'
+    },
+
+    'apt-eco-nest': {
+        id: 'apt-eco-nest',
+        name: 'Ekologiczne Gniazdko',
+        layout: 'split-left-image',
+        icon: 'fa-leaf',
+        category: 'apartments',
+        stats: [
+            { number: '100%', label: 'eko materiały' },
+            { number: 'Solar', label: 'energia' },
+            { number: 'Bio', label: 'śniadanie' }
+        ],
+        title: 'W harmonii z naturą',
+        subtitle: 'Odpoczynek bez śladu węglowego',
+        description: 'Nasz apartament to dowód, że luksus może być ekologiczny. Naturalne materiały, energia odnawialna, produkty lokalne. Odpoczywaj z czystym sumieniem, wiedząc że Twój pobyt nie obciąża planety.'
+    },
+
+    'apt-artist-studio': {
+        id: 'apt-artist-studio',
+        name: 'Studio Artysty',
+        layout: 'full-width',
+        icon: 'fa-palette',
+        category: 'apartments',
+        stats: [
+            { number: '90m²', label: 'kreatywności' },
+            { number: '3m', label: 'sufity' },
+            { number: 'Północ', label: 'światło' }
+        ],
+        title: 'Gdzie rodzi się sztuka',
+        subtitle: 'Inspirująca przestrzeń dla twórców',
+        description: 'Dawna pracownia malarza przekształcona w wyjątkowy apartament. Olbrzymie okna dające naturalne północne światło, oryginalne dzieła sztuki, fortepian w salonie. Miejsce, które pobudza wyobraźnię.'
+    },
+
+    'apt-historic-charm': {
+        id: 'apt-historic-charm',
+        name: 'Historyczny Urok',
+        layout: 'split-right-image',
+        icon: 'fa-landmark',
+        category: 'apartments',
+        stats: [
+            { number: 'XVIII w.', label: 'kamienica' },
+            { number: '130m²', label: 'historii' },
+            { number: 'Freski', label: 'oryginalne' }
+        ],
+        title: 'Zamieszkaj w historii',
+        subtitle: 'Autentyczny duch przeszłości',
+        description: 'Apartament w zabytkowej kamienicy z zachowanymi oryginalnymi freskami i sztukateriami. Wyposażenie łączy antyki z nowoczesnymi udogodnieniami. Śpij jak hrabia, korzystaj z internetu jak w XXI wieku.'
+    },
+
+    'apt-penthouse': {
+        id: 'apt-penthouse',
+        name: 'Penthouse z Widokiem',
+        layout: 'cards-grid',
+        icon: 'fa-crown',
+        category: 'apartments',
+        stats: [
+            { number: '200m²', label: 'luksusu' },
+            { number: '25 p.', label: 'piętro' },
+            { number: '180°', label: 'panorama' }
+        ],
+        title: 'Na szczycie miasta',
+        subtitle: 'Widoki, które zapierają dech',
+        description: 'Dwupoziomowy penthouse na ostatnim piętrze wieżowca. Prywatny taras z jacuzzi, panoramiczne widoki na miasto, profesjonalna kuchnia. Dla tych, którzy oczekują tylko tego, co najlepsze.'
+    },
+
+    'apt-cozy-studio': {
+        id: 'apt-cozy-studio',
+        name: 'Przytulne Studio',
+        layout: 'asymmetric',
+        icon: 'fa-home',
+        category: 'apartments',
+        stats: [
+            { number: '35m²', label: 'funkcjonalności' },
+            { number: 'Netflix', label: 'w cenie' },
+            { number: 'Mini', label: 'kuchnia' }
+        ],
+        title: 'Małe, ale zachwycające',
+        subtitle: 'Wszystko czego potrzebujesz',
+        description: 'Kompaktowe studio zaprojektowane z myślą o maksymalnej funkcjonalności. Każdy metr wykorzystany perfekcyjnie – od wygodnego łóżka przez miniaturową kuchnię po przytulny kącik do pracy lub relaksu.'
+    },
+
+    // ============================================
+    // DODATKOWE APARTAMENTY - CZĘŚĆ 1
+    // ============================================
+    'apt-beach-view': {
+        id: 'apt-beach-view',
+        name: 'Apartament z widokiem na morze',
+        layout: 'split-right-image',
+        icon: 'fa-umbrella-beach',
+        category: 'apartments',
+        stats: [
+            { number: '50m', label: 'od plaży' },
+            { number: '2', label: 'sypialnie' },
+            { number: 'Balkon', label: 'widokowy' }
+        ],
+        title: 'Budź się z widokiem na morze',
+        subtitle: 'Twoje okno na nieskończoność',
+        description: 'Spacer na plażę zajmie Ci zaledwie minutę. Z balkonu rozciąga się zapierający dech widok na morze. Wieczory spędzone przy szumie fal to coś, czego nie da się zapomnieć.'
+    },
+
+    'apt-penthouse-luxury': {
+        id: 'apt-penthouse-luxury',
+        name: 'Penthouse z Jacuzzi',
+        layout: 'full-width',
+        icon: 'fa-champagne-glasses',
+        category: 'apartments',
+        stats: [
+            { number: '120m²', label: 'ekskluzywności' },
+            { number: 'Jacuzzi', label: 'na tarasie' },
+            { number: '360°', label: 'panorama' }
+        ],
+        title: 'Życie na szczycie',
+        subtitle: 'Luksus, który zapiera dech',
+        description: 'Najwyższe piętro, najlepsze widoki. Prywatne jacuzzi na tarasie, gdzie możesz podziwiać zachody słońca z lampką wina. To nie jest tylko apartament – to styl życia.'
+    },
+
+    'apt-downtown-chic': {
+        id: 'apt-downtown-chic',
+        name: 'Apartament w Centrum',
+        layout: 'cards-grid',
+        icon: 'fa-city',
+        category: 'apartments',
+        stats: [
+            { number: '2 min', label: 'do metra' },
+            { number: '24/7', label: 'life' },
+            { number: 'Smart', label: 'Home' }
+        ],
+        title: 'Serce miasta u Twoich stóp',
+        subtitle: 'Wszystko w zasięgu ręki',
+        description: 'Restauracje, kluby, sklepy – wszystko na wyciągnięcie ręki. Mieszkasz tam, gdzie bije serce miasta. Inteligentny system zarządzania sprawia, że komfort jest maksymalny.'
+    },
+
+    'apt-garden-ground': {
+        id: 'apt-garden-ground',
+        name: 'Apartament z Ogrodem',
+        layout: 'split-left-image',
+        icon: 'fa-seedling',
+        category: 'apartments',
+        stats: [
+            { number: '100m²', label: 'ogrodu' },
+            { number: 'Grill', label: 'w cenie' },
+            { number: 'Parter', label: 'wygoda' }
+        ],
+        title: 'Twoja prywatna oaza zieleni',
+        subtitle: 'Całkiem jak własny dom',
+        description: 'Wyjdź rano na taras z kawą, wieczorem rozpal grilla. Dzieci będą zachwycone własnym placem zabaw, a Ty ciszą i spokojem.'
+    },
+
+    'apt-mountain-cabin': {
+        id: 'apt-mountain-cabin',
+        name: 'Górski Apartament',
+        layout: 'asymmetric',
+        icon: 'fa-mountain',
+        category: 'apartments',
+        stats: [
+            { number: '1200m', label: 'n.p.m.' },
+            { number: 'Kominek', label: 'prawdziwy' },
+            { number: 'Szlaki', label: 'z drzwi' }
+        ],
+        title: 'Oddech gór, świeże powietrze',
+        subtitle: 'Natura tuż za oknem',
+        description: 'Budzisz się z widokiem na szczyty. Popołudnia przy kominku z książką. Wieczory pod rozgwieżdżonym niebem. Góry to nie tylko krajobraz – to sposób na życie.'
+    },
+
+    'apt-student-friendly': {
+        id: 'apt-student-friendly',
+        name: 'Przyjazny Studentom',
+        layout: 'split-right-image',
+        icon: 'fa-graduation-cap',
+        category: 'apartments',
+        stats: [
+            { number: 'WiFi', label: '300 Mbps' },
+            { number: 'Biurko', label: 'ergonomiczne' },
+            { number: 'Cena', label: 'rozsądna' }
+        ],
+        title: 'Focus na naukę i wygodę',
+        subtitle: 'Idealne dla młodych',
+        description: 'Szybki internet, przestronne biurko, spokojna okolica. Wszystko, czego potrzebujesz do efektywnej nauki. A po sesji – pełna kuchnia do wspólnych kolacji z kolegami.'
+    },
+
+    'apt-pet-paradise': {
+        id: 'apt-pet-paradise',
+        name: 'Przyjazny zwierzętom',
+        layout: 'cards-grid',
+        icon: 'fa-paw',
+        category: 'apartments',
+        stats: [
+            { number: 'Park', label: '2 min' },
+            { number: 'Parter', label: 'łatwy dostęp' },
+            { number: 'Ogród', label: 'dla pupila' }
+        ],
+        title: 'Wasze futrzaki są mile widziane',
+        subtitle: 'Wakacje dla całej rodziny',
+        description: 'Park tuż obok, ogródek do biegania, a nawet miska i legowisko w cenie. Twój czworonożny przyjaciel będzie tu równie szczęśliwy jak Ty.'
+    },
+
+    'apt-eco-green': {
+        id: 'apt-eco-green',
+        name: 'Eko Apartament',
+        layout: 'full-width',
+        icon: 'fa-leaf',
+        category: 'apartments',
+        stats: [
+            { number: 'A+++', label: 'energia' },
+            { number: 'Zero', label: 'waste' },
+            { number: 'Bio', label: 'kosmetyki' }
+        ],
+        title: 'Komfort z troską o planetę',
+        subtitle: 'Ekologiczny luksus',
+        description: 'Panele słoneczne, deszczówka do podlewania, biodegradowalne kosmetyki. Ciesz się komfortem wiedząc, że Twój pobyt nie szkodzi środowisku.'
+    },
+
+    'apt-historic-charm': {
+        id: 'apt-historic-charm',
+        name: 'Zabytkowa Kamienica',
+        layout: 'asymmetric',
+        icon: 'fa-landmark',
+        category: 'apartments',
+        stats: [
+            { number: '1920', label: 'rok budowy' },
+            { number: '3.5m', label: 'wysokość' },
+            { number: 'Oryginał', label: 'parkiet' }
+        ],
+        title: 'Historia w każdym detalu',
+        subtitle: 'Elegancja sprzed wieku',
+        description: 'Oryginalne sztukaterie, wysokie sufity, drewniane parkiety – każdy element opowiada historię. Współczesny komfort w historycznej oprawie.'
+    },
+
+    'apt-family-duplex': {
+        id: 'apt-family-duplex',
+        name: 'Rodzinny Duplex',
+        layout: 'split-left-image',
+        icon: 'fa-house-user',
+        category: 'apartments',
+        stats: [
+            { number: '2', label: 'poziomy' },
+            { number: '3', label: 'sypialnie' },
+            { number: 'Plac', label: 'zabaw w ogrodzie' }
+        ],
+        title: 'Przestrzeń dla całej rodziny',
+        subtitle: 'Dwa piętra komfortu',
+        description: 'Rodzice na górze, dzieci na dole – każdy ma swoją przestrzeń. Ogromny salon idealny na rodzinne wieczory. Ogród z placem zabaw to raj dla małych odkrywców.'
+    },
+
+    'apt-artist-workshop': {
+        id: 'apt-artist-workshop',
+        name: 'Pracownia Artysty',
+        layout: 'split-right-image',
+        icon: 'fa-palette',
+        category: 'apartments',
+        stats: [
+            { number: '4m', label: 'wysokość' },
+            { number: 'Świetlne', label: 'okna' },
+            { number: 'Inspiracja', label: 'w cenie' }
+        ],
+        title: 'Przestrzeń, która inspiruje',
+        subtitle: 'Twoja kreatywna enklawa',
+        description: 'Wysokie sufity, ogromne okna wpuszczające naturalne światło. Industrialny charakter i artystyczna dusza. Idealne miejsce dla twórców i marzycieli.'
+    },
+
+    'apt-minimalist-zen': {
+        id: 'apt-minimalist-zen',
+        name: 'Minimalistyczny Zen',
+        layout: 'cards-grid',
+        icon: 'fa-spa',
+        category: 'apartments',
+        stats: [
+            { number: 'Less', label: 'is more' },
+            { number: 'Cisza', label: 'garantowana' },
+            { number: 'Medytacja', label: 'kącik' }
+        ],
+        title: 'Prostota, która uspokaja',
+        subtitle: 'Harmonia i równowaga',
+        description: 'Niczego zbędnego. Czyste linie, naturalne materiały, maksimum przestrzeni. Tutaj odnajdziesz spokój i możesz skupić się na tym, co naprawdę ważne.'
+    },
+
+    'apt-vintage-retro': {
+        id: 'apt-vintage-retro',
+        name: 'Retro-Vintage',
+        layout: 'asymmetric',
+        icon: 'fa-record-vinyl',
+        category: 'apartments',
+        stats: [
+            { number: 'Vinyl', label: 'kolekcja' },
+            { number: '60s', label: 'design' },
+            { number: 'Unique', label: 'atmosfera' }
+        ],
+        title: 'Podróż w czasie',
+        subtitle: 'Vintage vibes, współczesny komfort',
+        description: 'Meble z lat 60., gramofon z kolekcją winyli, psychodeliczne tapety. To miejsce ma duszę i opowiada historie. Idealne dla tych, którzy kochają klimat minionej epoki.'
+    },
+
+    'apt-work-remote-hub': {
+        id: 'apt-work-remote-hub',
+        name: 'Digital Nomad Hub',
+        layout: 'full-width',
+        icon: 'fa-laptop',
+        category: 'apartments',
+        stats: [
+            { number: 'Fiber', label: '1 Gb/s' },
+            { number: 'Biuro', label: 'dedykowane' },
+            { number: '24/7', label: 'co-working' }
+        ],
+        title: 'Pracuj z dowolnego miejsca',
+        subtitle: 'Twoje domowe biuro marzeń',
+        description: 'Błyskawiczny internet, ergonomiczne biurko z dwoma monitorami, profesjonalne oświetlenie do video callów. Mieszkaj i pracuj w miejscu stworzonym dla cyfrowych nomadów.'
+    },
+
+    'apt-newlyweds-nest': {
+        id: 'apt-newlyweds-nest',
+        name: 'Gniazdo Młodej Pary',
+        layout: 'split-left-image',
+        icon: 'fa-heart',
+        category: 'apartments',
+        stats: [
+            { number: 'Romantyk', label: 'balkon' },
+            { number: 'Śniadanie', label: 'do łóżka' },
+            { number: '∞', label: 'wspomnień' }
+        ],
+        title: 'Miejsce na pierwsze wspomnienia',
+        subtitle: 'Wasz pierwszy wspólny dom',
+        description: 'Mały, przytulny, pełen miłości. Balkon na poranną kawę we dwoje, wygodna kuchnia na wspólne gotowanie, sypialnia jak z bajki. Idealne miejsce na start waszej wspólnej przygody.'
+    }
+};
+
+// ============================================
+// LAYOUT GENERATORS
+// ============================================
+const AboutSectionLayouts = {
+    'split-left-image': (variant, settings) => `
+<section class="section-intro" id="o-nas">
+    <div class="container">
+        <div class="intro-grid">
+            <div class="intro-image">
+                <img src="${settings.mainImage || 'https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg?auto=compress&cs=tinysrgb&w=800'}" alt="${settings.propertyName}">
+            </div>
+            <div class="intro-content">
+                <span class="section-label"><i class="fas ${variant.icon}"></i> ${variant.subtitle}</span>
+                <h2 class="section-title">${variant.title}</h2>
+                <p class="intro-lead">${variant.description}</p>
+                <div class="intro-stats">
+                    ${variant.stats.map(s => `
+                    <div class="stat-item">
+                        <span class="stat-number">${s.number}</span>
+                        <span class="stat-label">${s.label}</span>
+                    </div>`).join('')}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>`,
+
+    'split-right-image': (variant, settings) => `
+<section class="section-intro section-intro-reverse" id="o-nas">
+    <div class="container">
+        <div class="intro-grid intro-grid-reverse">
+            <div class="intro-content">
+                <span class="section-label"><i class="fas ${variant.icon}"></i> ${variant.subtitle}</span>
+                <h2 class="section-title">${variant.title}</h2>
+                <p class="intro-lead">${variant.description}</p>
+                <div class="intro-stats">
+                    ${variant.stats.map(s => `
+                    <div class="stat-item">
+                        <span class="stat-number">${s.number}</span>
+                        <span class="stat-label">${s.label}</span>
+                    </div>`).join('')}
+                </div>
+            </div>
+            <div class="intro-image">
+                <img src="${settings.mainImage || 'https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg?auto=compress&cs=tinysrgb&w=800'}" alt="${settings.propertyName}">
+            </div>
+        </div>
+    </div>
+</section>`,
+
+    'full-width': (variant, settings) => `
+<section class="section-intro section-intro-fullwidth" id="o-nas">
+    <div class="intro-hero" style="background-image: url('${settings.mainImage || 'https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg?auto=compress&cs=tinysrgb&w=1600'}')">
+        <div class="intro-hero-overlay"></div>
+        <div class="container">
+            <div class="intro-hero-content">
+                <span class="section-label section-label-light"><i class="fas ${variant.icon}"></i> ${variant.subtitle}</span>
+                <h2 class="section-title section-title-light">${variant.title}</h2>
+                <p class="intro-lead intro-lead-light">${variant.description}</p>
+                <div class="intro-stats intro-stats-light">
+                    ${variant.stats.map(s => `
+                    <div class="stat-item">
+                        <span class="stat-number">${s.number}</span>
+                        <span class="stat-label">${s.label}</span>
+                    </div>`).join('')}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>`,
+
+    'cards-grid': (variant, settings) => `
+<section class="section-intro section-intro-cards" id="o-nas">
+    <div class="container">
+        <div class="intro-header-center">
+            <span class="section-label"><i class="fas ${variant.icon}"></i> ${variant.subtitle}</span>
+            <h2 class="section-title">${variant.title}</h2>
+            <p class="intro-lead">${variant.description}</p>
+        </div>
+        <div class="intro-cards-grid">
+            ${variant.stats.map(s => `
+            <div class="intro-stat-card">
+                <span class="stat-number">${s.number}</span>
+                <span class="stat-label">${s.label}</span>
+            </div>`).join('')}
+        </div>
+    </div>
+</section>`,
+
+    'asymmetric': (variant, settings) => `
+<section class="section-intro section-intro-asymmetric" id="o-nas">
+    <div class="container">
+        <div class="intro-asymmetric-grid">
+            <div class="intro-main-image">
+                <img src="${settings.mainImage || 'https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg?auto=compress&cs=tinysrgb&w=800'}" alt="${settings.propertyName}">
+            </div>
+            <div class="intro-side-content">
+                <span class="section-label"><i class="fas ${variant.icon}"></i> ${variant.subtitle}</span>
+                <h2 class="section-title">${variant.title}</h2>
+                <p class="intro-lead">${variant.description}</p>
+            </div>
+            <div class="intro-side-stats">
+                ${variant.stats.map(s => `
+                <div class="stat-block">
+                    <span class="stat-number">${s.number}</span>
+                    <span class="stat-label">${s.label}</span>
+                </div>`).join('')}
+            </div>
+        </div>
+    </div>
+</section>`
+};
+
+// ============================================
+// GENERATE ABOUT SECTION
+// ============================================
+function generateAboutSection(variantId, settings) {
+    const variant = ABOUT_SECTION_VARIANTS[variantId];
+    if (!variant) {
+        console.warn('About section variant not found:', variantId);
+        return '';
+    }
+
+    const layoutGenerator = AboutSectionLayouts[variant.layout];
+    if (!layoutGenerator) {
+        console.warn('Layout generator not found:', variant.layout);
+        return '';
+    }
+
+    return layoutGenerator(variant, settings);
+}
+
+// Get all apartment variants
+function getApartmentAboutVariants() {
+    return Object.values(ABOUT_SECTION_VARIANTS).filter(v => v.category === 'apartments');
+}
+
+// Get all hotel variants
+function getHotelAboutVariants() {
+    return Object.values(ABOUT_SECTION_VARIANTS).filter(v => !v.category || v.category === 'hotel');
+}
+
+// Export
+window.ABOUT_SECTION_VARIANTS = ABOUT_SECTION_VARIANTS;
+window.AboutSectionLayouts = AboutSectionLayouts;
+window.generateAboutSection = generateAboutSection;
+window.getApartmentAboutVariants = getApartmentAboutVariants;
+window.getHotelAboutVariants = getHotelAboutVariants;
