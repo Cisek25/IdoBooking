@@ -79,7 +79,32 @@ const CSSEngine = {
         'desert-dusk': 'linear-gradient(135deg, #d4a373 0%, #bc6c25 50%, #1a1a2e 100%)',
         'lavender-fields': 'linear-gradient(135deg, #e8d5e8 0%, #c8a2c8 50%, #9966cc 100%)',
         'rainy-day': 'linear-gradient(135deg, #616161 0%, #9bc5c3 50%, #c5e1e7 100%)',
-        'golden-hour': 'linear-gradient(135deg, #f7971e 0%, #ffd200 50%, #ff8c00 100%)'
+        'golden-hour': 'linear-gradient(135deg, #f7971e 0%, #ffd200 50%, #ff8c00 100%)',
+
+        // ===== NEW EXPANDED GRADIENTS =====
+        'sunset-vibes': 'linear-gradient(to right, #ff5f6d, #ffc371)',
+        'morning-dew': 'linear-gradient(to right, #00b09b, #96c93d)',
+        'sandy-gold': 'linear-gradient(to right, #eecda3, #ef629f)',
+        'deep-ocean': 'linear-gradient(to right, #2b5876, #4e4376)',
+        'mystic-mauve': 'linear-gradient(to right, #42275a, #734b6d)',
+        'cherry-blossom': 'linear-gradient(to right, #ff9a9e, #fecfef)',
+        'mountain-mist': 'linear-gradient(to right, #606c88, #3f4c6b)',
+        'desert-gold': 'linear-gradient(to right, #CAC531, #F3F9A7)',
+        'northern-lights': 'linear-gradient(to right, #43cea2, #185a9d)',
+        'urban-night': 'linear-gradient(to right, #232526, #414345)',
+        'tropical-jungle': 'linear-gradient(to right, #11998e, #38ef7d)',
+        'dark-volcano': 'linear-gradient(to right, #870000, #190a05)',
+        'mystic-river': 'linear-gradient(to right, #4facfe, #00f2fe)',
+        'golden-sands': 'linear-gradient(to right, #e65c00, #F9D423)',
+        'silver-lining': 'linear-gradient(to right, #bdc3c7, #2c3e50)',
+        'bronze': 'linear-gradient(to right, #603813, #b29f94)',
+        'autumn-glow': 'linear-gradient(to right, #e52d27, #b31217)',
+        'winter-blues': 'linear-gradient(to right, #2980b9, #6dd5fa, #ffffff)',
+        'summer-heat': 'linear-gradient(to right, #f12711, #f5af19)',
+        'midnight-bloom': 'linear-gradient(to right, #2b5876, #4e4376)',
+        'blush': 'linear-gradient(to right, #B24592, #F15F79)',
+        'aqua-splash': 'linear-gradient(to right, #13547a, #80d0c7)',
+        'berry-juice': 'linear-gradient(to right, #8E2DE2, #4A00E0)'
     },
 
 
@@ -303,7 +328,14 @@ a {
 .section-location,
 .section-testimonials,
 .section-faq,
-.section-cta {
+.section-cta,
+.section-attractions,
+.section-dining,
+.section-pricing,
+.section-spa,
+.section-events,
+.section-transport,
+.section-rules {
     width: 100vw;
     max-width: 100vw;
     margin-left: calc(-50vw + 50%);
@@ -835,12 +867,70 @@ ${effectsSettings.hoverEffects?.flipCards ? '' : `
     display: flex;
     gap: var(--space-6);
     transition: transform 0.5s ease;
+    padding: 20px 0 40px 0; /* More padding for shadows */
+    width: 100%; /* Ensure track takes full width */
+}
+
+/* Ensure global box sizing for preview components */
+.rooms-slider *, .amenities-slider * {
+    box-sizing: border-box;
 }
 
 .rooms-slider .room-card {
-    min-width: calc((100% - 2 * var(--space-6)) / 3); /* Show 3 complete cards */
+    min-width: calc((100% - 2 * var(--space-6)) / 3);
     max-width: calc((100% - 2 * var(--space-6)) / 3);
     flex-shrink: 0;
+}
+
+/* AMENITIES SLIDER */
+.amenities-slider-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+}
+
+.amenities-slider {
+    overflow: hidden;
+    flex: 1;
+    width: 100%;
+    padding: 0 5px; /* Tiny padding to prevent edge clipping of container */
+}
+
+.amenities-slider-track {
+    display: flex;
+    gap: var(--space-6);
+    transition: transform 0.5s ease;
+    padding: 20px 0 30px 0;
+    width: 100%;
+}
+
+.amenities-slider .amenity-card {
+    min-width: calc((100% - 3 * var(--space-6)) / 4); /* Show 4 items by default */
+    max-width: calc((100% - 3 * var(--space-6)) / 4);
+    flex-shrink: 0;
+    box-sizing: border-box;
+}
+
+@media (max-width: 1200px) {
+    .amenities-slider .amenity-card {
+        min-width: calc((100% - 2 * var(--space-6)) / 3);
+        max-width: calc((100% - 2 * var(--space-6)) / 3);
+    }
+}
+
+@media (max-width: 900px) {
+    .amenities-slider .amenity-card {
+        min-width: calc((100% - var(--space-6)) / 2);
+        max-width: calc((100% - var(--space-6)) / 2);
+    }
+}
+
+@media (max-width: 600px) {
+    .amenities-slider .amenity-card {
+        min-width: 100%;
+        max-width: 100%;
+    }
 }
 
 @media (max-width: 1200px) {
@@ -2299,116 +2389,119 @@ input[type="checkbox"]:checked::after {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--offers-primary);
-    transition: all 0.2s ease;
+    transition: background-color 0.2s;
 }
 
 .filter-section h4:hover,
-.filter-section h3:hover {
-    background: #f0f4f8;
+[class*="panel-filter"] > div:first-child:hover {
+    background: #f1f3f5;
 }
 
-/* Collapse indicator arrow */
 .filter-section h4::after,
-.filter-section h3::after,
-.accordion-button::after {
-    content: "▼";
-    font-size: 10px;
-    color: var(--offers-primary);
-    transition: transform 0.3s ease;
-    opacity: 0.7;
+[class*="panel-filter"] > div:first-child::after {
+    content: "\\f078";
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    transition: transform 0.3s;
 }
 
-.filter-section.collapsed h4::after,
-.filter-section.collapsed h3::after,
-.accordion-button.collapsed::after {
-    transform: rotate(-90deg);
+/* Hide content helper */
+.filter-content,
+[class*="panel-filter"] > div:nth-child(2),
+.checkbox-group > div {
+    padding: 15px;
+    max-height: 400px;
+    overflow-y: auto;
+    transition: max-height 0.3s ease-in-out;
 }
 
-/* Hidden content when collapsed */
-.filter-section.collapsed > *:not(h4):not(h3),
-.collapsed .checkbox-list,
-.collapsed .filter-options {
-    display: none;
+/* Collapsed state (optional class to trigger via JS or default if structured) */
+.filter-collapsed .filter-content {
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    overflow: hidden;
 }
 
-/* AMENITIES - smaller font size for compact display */
-.checkbox label,
-.checkbox-group label,
-[class*="filter"] label,
-input[type="checkbox"] + label,
-div[role="checkbox"] {
-    font-size: 13px !important;
-    padding: 8px 12px !important;
-    line-height: 1.4;
+/* Amenities Scroll Fix */
+.amenities-list,
+.filter-amenities {
+    max-height: 300px;
+    overflow-y: auto;
 }
-
-/* Smaller checkbox icons */
-.checkbox input[type="checkbox"],
-input[type="checkbox"] {
-    width: 16px !important;
-    height: 16px !important;
-    margin-right: 8px !important;
-}
-
-/* Add JS-based collapse toggle script hint */
-/* To enable: document.querySelectorAll('.filter-section h4, .filter-section h3').forEach(h => h.onclick = () => h.parentElement.classList.toggle('collapsed')); */
 `;
+
         }
+
+        // Button Corrections
+        css += `
+/* ============================================
+   BUTTON CORRECTIONS
+   ============================================ */
+.btn, .button, input[type="submit"], button, .offer_button {
+    min-height: 48px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    box-sizing: border-box !important;
+    vertical-align: middle !important;
+    line-height: normal !important;
+}
+`;
+
 
         // Card hover effects
         if (offersSettings.cardsHover !== false) {
             css += `
-/* ============================================
-   OFFER CARDS - HOVER EFFECTS
-   ============================================ */
+    /* ============================================
+       OFFER CARDS - HOVER EFFECTS
+       ============================================ */
 
-/* Offer card container */
-.object-icon,
-.offer-card,
-.offer-item,
-[class*="offer"],
-[class*="object-preview"],
-a[href*="/offers/"] {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Offer card container */
+    .object - icon,
+.offer - card,
+.offer - item,
+    [class*= "offer"],
+    [class*= "object-preview"],
+    a[href *= "/offers/"] {
+    transition: all 0.3s cubic - bezier(0.4, 0, 0.2, 1);
 }
 
 /* Card images - simple styling, no border/outline */
-.object-icon img,
-.offer-card img,
-[class*="offer"] img {
-    border-radius: 0 !important;
+.object - icon img,
+.offer - card img,
+    [class*= "offer"] img {
+    border - radius: 0!important;
     transition: transform 0.4s ease;
-    border: none !important;
-    outline: none !important;
-    box-shadow: none !important;
+    border: none!important;
+    outline: none!important;
+    box - shadow: none!important;
 }
 
-.object-icon:hover img,
-.offer-card:hover img,
-[class*="offer"]:hover img {
+.object - icon:hover img,
+.offer - card:hover img,
+    [class*= "offer"]:hover img {
     transform: scale(1.01);
 }
 
 /* Card content containers */
-.offer-details,
-.offer-content,
-.offer-info {
+.offer - details,
+.offer - content,
+.offer - info {
     padding: 15px;
     background: #ffffff;
-    border-radius: 0 0 var(--offers-radius) var(--offers-radius);
+    border - radius: 0 0 var(--offers - radius) var(--offers - radius);
 }
 
 /* Hover lift effect on whole cards */
-[class*="col-"][class*="offer"],
-[class*="col-md-"] > [class*="offer"] {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+[class*= "col-"][class*= "offer"],
+    [class*= "col-md-"] > [class*= "offer"] {
+    transition: transform 0.3s ease, box - shadow 0.3s ease;
 }
 
-[class*="col-"][class*="offer"]:hover,
-[class*="col-md-"] > [class*="offer"]:hover {
+[class*= "col-"][class*= "offer"]: hover,
+    [class*= "col-md-"] > [class*= "offer"]:hover {
     transform: translateY(-8px);
 }
 `;
@@ -2417,203 +2510,207 @@ a[href*="/offers/"] {
         // Card styling
         if (offersSettings.cardsRounded !== false || offersSettings.cardsShadow !== false) {
             css += `
-/* ============================================
-   OFFER CARDS - GENERAL STYLING
-   ============================================ */
+    /* ============================================
+       OFFER CARDS - GENERAL STYLING
+       ============================================ */
 
-/* Card containers - NO BORDER/OUTLINE */
-.offer-card,
-.object-card,
-[class*="offer-item"],
-.offers-container {
+    /* Card containers - NO BORDER/OUTLINE */
+    .offer - card,
+.object - card,
+    [class*= "offer-item"],
+.offers - container {
     background: #ffffff;
-    border-radius: var(--offers-radius);
-    box-shadow: var(--offers-shadow);
+    border - radius: var(--offers - radius);
+    box - shadow: var(--offers - shadow);
     overflow: hidden;
-    border: none !important;
-    outline: none !important;
+    border: none!important;
+    outline: none!important;
 }
 
 /* Price styling */
 .price,
-.offer-price,
-[class*="price"] {
-    color: var(--offers-primary);
-    font-weight: 700;
-    font-size: 1.25em;
+.offer - price,
+    [class*= "price"] {
+    color: var(--offers - primary);
+    font - weight: 700;
+    font - size: 1.25em;
 }
 
 /* Price label */
-.price-label,
-.from-price {
+.price - label,
+.from - price {
     color: #6c757d;
-    font-size: 0.85em;
+    font - size: 0.85em;
 }
 
 /* Offer title links */
-.offer-title,
-.offer-name,
-a[href*="/offers/"] h3,
-a[href*="/offers/"] h4 {
-    color: var(--offers-primary);
-    font-weight: 600;
+.offer - title,
+.offer - name,
+    a[href *= "/offers/"] h3,
+        a[href *= "/offers/"] h4 {
+    color: var(--offers - primary);
+    font - weight: 600;
     transition: color 0.2s ease;
 }
 
-.offer-title:hover,
-a[href*="/offers/"]:hover h3,
-a[href*="/offers/"]:hover h4 {
-    color: var(--offers-secondary);
+.offer - title: hover,
+    a[href *= "/offers/"]:hover h3,
+        a[href *= "/offers/"]:hover h4 {
+    color: var(--offers - secondary);
 }
 
 /* RESET h2 titles - remove any background/outline */
-.offers-container h2,
-.offers-container h2 a,
-.accommodation-rest h2,
-.accommodation-rest h2 a,
-h2 a[href*="/offer/"] {
-    background: transparent !important;
-    border: none !important;
-    outline: none !important;
-    box-shadow: none !important;
-    padding: 0 !important;
+.offers - container h2,
+.offers - container h2 a,
+.accommodation - rest h2,
+.accommodation - rest h2 a,
+    h2 a[href *= "/offer/"] {
+    background: transparent!important;
+    border: none!important;
+    outline: none!important;
+    box - shadow: none!important;
+    padding: 0!important;
     color: inherit;
-    text-decoration: none;
+    text - decoration: none;
 }
 `;
         }
 
         // Button styling
         css += `
-/* ============================================
-   BUTTONS - FIXED FOR IDOBOOKING STRUCTURE
-   Structure: <a><span class="btn">SZCZEGÓŁY</span></a>
-   ============================================ */
+    /* ============================================
+       BUTTONS - FIXED FOR IDOBOOKING STRUCTURE
+       Structure: <a><span class="btn">SZCZEGÓŁY</span></a>
+       ============================================ */
 
-/* RESET outer link wrapper - make transparent */
-.accommodation-buttons a,
-a[aria-label*="szczegóły"],
-a[aria-label*="Szczegóły"],
-a[href*="/offer/"] {
-    background: transparent !important;
-    border: none !important;
-    outline: none !important;
-    box-shadow: none !important;
-    padding: 0 !important;
-    text-decoration: none !important;
-    display: inline-block;
+    /* RESET outer link wrapper - make transparent */
+    .accommodation - buttons a,
+        a[aria - label*= "szczegóły"],
+a[aria - label*= "Szczegóły"],
+a[href *= "/offer/"] {
+    background: transparent!important;
+    border: none!important;
+    outline: none!important;
+    box - shadow: none!important;
+    padding: 0!important;
+    text - decoration: none!important;
+    display: inline - block;
 }
 
 /* Style ONLY the inner .btn span - single color */
-.accommodation-buttons .btn,
-.accommodation-buttons span.btn,
-a[aria-label*="szczegóły"] .btn,
-a[aria-label*="Szczegóły"] .btn,
-a[href*="/offer/"] .btn,
-span.btn {
+.accommodation - buttons.btn,
+.accommodation - buttons span.btn,
+    a[aria - label*= "szczegóły"] .btn,
+        a[aria - label*= "Szczegóły"] .btn,
+            a[href *= "/offer/"].btn,
+            span.btn {
     ${offersSettings.buttonsRounded !== false ? 'border-radius: 25px !important;' : 'border-radius: 4px !important;'}
-    padding: 12px 24px !important;
-    font-weight: 600 !important;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-size: 0.85em;
+    padding: 12px 24px!important;
+    font - weight: 600!important;
+    text - transform: uppercase;
+    letter - spacing: 0.5px;
+    font - size: 0.85em;
     transition: all 0.3s ease;
-    border: none !important;
-    outline: none !important;
+    border: none!important;
+    outline: none!important;
     cursor: pointer;
-    display: inline-block;
+    display: inline - block;
     ${offersSettings.buttonsGradient && useGradients
                 ? `background: ${gradientValue} !important;`
-                : `background: var(--offers-primary) !important;`}
-    color: #ffffff !important;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                : `background: var(--offers-primary) !important;`
+            }
+    color: #ffffff!important;
+    box - shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 /* Hover on the span.btn only */
-.accommodation-buttons a:hover .btn,
-a[aria-label*="szczegóły"]:hover .btn,
-a[aria-label*="Szczegóły"]:hover .btn,
-a[href*="/offer/"]:hover .btn,
-span.btn:hover {
+.accommodation - buttons a: hover.btn,
+    a[aria - label*= "szczegóły"]: hover.btn,
+        a[aria - label*= "Szczegóły"]: hover.btn,
+            a[href *= "/offer/"]: hover.btn,
+                span.btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    box - shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     ${offersSettings.buttonsGradient
                 ? 'filter: brightness(1.1);'
-                : `background: var(--offers-secondary) !important; color: #1a1a1a !important;`}
+                : `background: var(--offers-secondary) !important; color: #1a1a1a !important;`
+            }
 }
 
 /* General button styling for forms */
-button[type="submit"],
-input[type="submit"],
-#filters_submit {
+button[type = "submit"],
+    input[type = "submit"],
+    #filters_submit {
     ${offersSettings.buttonsRounded !== false ? 'border-radius: 25px !important;' : 'border-radius: 4px !important;'}
-    padding: 12px 24px !important;
-    font-weight: 600 !important;
-    border: none !important;
-    outline: none !important;
+    padding: 12px 24px!important;
+    font - weight: 600!important;
+    border: none!important;
+    outline: none!important;
     cursor: pointer;
     ${offersSettings.buttonsGradient && useGradients
                 ? `background: ${gradientValue} !important;`
-                : `background: var(--offers-primary) !important;`}
-    color: #ffffff !important;
+                : `background: var(--offers-primary) !important;`
+            }
+    color: #ffffff!important;
     transition: all 0.3s ease;
 }
 
-button[type="submit"]:hover,
-#filters_submit:hover {
+button[type = "submit"]: hover,
+    #filters_submit:hover {
     transform: translateY(-2px);
     ${offersSettings.buttonsGradient
                 ? 'filter: brightness(1.1);'
-                : `background: var(--offers-secondary) !important; color: #1a1a1a !important;`}
+                : `background: var(--offers-secondary) !important; color: #1a1a1a !important;`
+            }
 }
 `;
 
         // Navigation styling
         css += `
-/* ============================================
-   NAVIGATION - CONSISTENT WITH MAIN PAGE
-   ============================================ */
+    /* ============================================
+       NAVIGATION - CONSISTENT WITH MAIN PAGE
+       ============================================ */
 
-/* Logo - remove shadow/outline */
-.navbar-brand img,
+    /* Logo - remove shadow/outline */
+    .navbar - brand img,
 .logo img,
-header img[alt*="logo"],
-header img[alt*="Logo"] {
-    box-shadow: none !important;
-    border: none !important;
-    background: transparent !important;
-    filter: none !important;
+    header img[alt *= "logo"],
+        header img[alt *= "Logo"] {
+    box - shadow: none!important;
+    border: none!important;
+    background: transparent!important;
+    filter: none!important;
     transition: transform 0.3s ease;
 }
 
-.navbar-brand:hover img {
+.navbar - brand:hover img {
     transform: scale(1.05);
 }
 
-.nav-link {
-    color: var(--offers-primary);
-    font-weight: 500;
+.nav - link {
+    color: var(--offers - primary);
+    font - weight: 500;
     transition: color 0.2s ease;
     position: relative;
 }
 
-.nav-link:hover {
-    color: var(--offers-secondary);
+.nav - link:hover {
+    color: var(--offers - secondary);
 }
 
-.nav-link::after {
+.nav - link::after {
     content: '';
     position: absolute;
     bottom: -2px;
     left: 0;
     width: 0;
     height: 2px;
-    background: var(--offers-secondary);
+    background: var(--offers - secondary);
     transition: width 0.3s ease;
 }
 
-.nav-link:hover::after {
-    width: 100%;
+.nav - link: hover::after {
+    width: 100 %;
 }
 `;
 
@@ -2624,8 +2721,8 @@ header img[alt*="Logo"] {
    ============================================ */
 
 #map_container,
-.leaflet-container {
-    border-radius: var(--offers-radius);
+.leaflet - container {
+    border - radius: var(--offers - radius);
     overflow: hidden;
     margin: 20px 0;
 }
@@ -2638,24 +2735,24 @@ header img[alt*="Logo"] {
    ============================================ */
 
 #backTop {
-    background: var(--offers-primary);
+    background: var(--offers - primary);
     color: #ffffff;
-    border-radius: 50%;
+    border - radius: 50 %;
     width: 50px;
     height: 50px;
     display: flex;
-    align-items: center;
-    justify-content: center;
+    align - items: center;
+    justify - content: center;
     position: fixed;
     bottom: 30px;
     right: 30px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    box - shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     transition: all 0.3s ease;
-    z-index: 1000;
+    z - index: 1000;
 }
 
 #backTop:hover {
-    background: var(--offers-secondary);
+    background: var(--offers - secondary);
     transform: translateY(-4px);
 }
 `;
@@ -2666,21 +2763,21 @@ header img[alt*="Logo"] {
    RESPONSIVE IMPROVEMENTS
    ============================================ */
 
-@media (max-width: 768px) {
+@media(max - width: 768px) {
     .checkbox,
-    div[role="checkbox"] {
+        div[role = "checkbox"] {
         padding: 12px;
     }
     
     .btn,
-    #filters_submit {
-        width: 100%;
+        #filters_submit {
+        width: 100 %;
         padding: 14px;
     }
-    
-    [class*="offer"] img {
+
+    [class*= "offer"] img {
         /* On mobile, cards may stack vertically so round top corners */
-        border-radius: var(--offers-radius) var(--offers-radius) 0 0 !important;
+        border - radius: var(--offers - radius) var(--offers - radius) 0 0!important;
     }
 }
 `;
@@ -2718,21 +2815,21 @@ header img[alt*="Logo"] {
     // Generate per-section background CSS
     generateSectionBackgrounds(sectionBackgrounds, gradientValue) {
         let css = `
-/* ============================================
-   CUSTOM SECTION BACKGROUNDS
-   ============================================ */
-`;
+    /* ============================================
+       CUSTOM SECTION BACKGROUNDS
+       ============================================ */
+    `;
 
         Object.entries(sectionBackgrounds).forEach(([sectionId, bgType]) => {
             if (!bgType || bgType === 'white') return; // Default white, no extra CSS needed
 
-            const sectionClass = `.section-${sectionId}`;
+            const sectionClass = `.section - ${sectionId} `;
 
             switch (bgType) {
                 case 'light':
                     css += `
 ${sectionClass} {
-    background: var(--color-light) !important;
+    background: var(--color - light)!important;
 }
 `;
                     break;
@@ -2743,35 +2840,35 @@ ${sectionClass} {
     background: ${gradientValue} !important;
 }
 
-${sectionClass} .section-title,
-${sectionClass} .section-label,
-${sectionClass} .section-desc {
-    color: #fff !important;
+${sectionClass} .section - title,
+    ${sectionClass} .section - label,
+        ${sectionClass} .section - desc {
+    color: #fff!important;
 }
 
-${sectionClass} .amenity-card {
-    background: rgba(255, 255, 255, 0.15) !important;
-    border-color: rgba(255, 255, 255, 0.25) !important;
+${sectionClass} .amenity - card {
+    background: rgba(255, 255, 255, 0.15)!important;
+    border - color: rgba(255, 255, 255, 0.25)!important;
 }
 
-${sectionClass} .amenity-card h3 {
-    color: #fff !important;
+${sectionClass} .amenity - card h3 {
+    color: #fff!important;
 }
 
 /* Fix visibility for stats and features on gradient background */
-${sectionClass} .stat-item,
-${sectionClass} .feature-card {
-    background: rgba(255,255,255,0.15) !important;
-    backdrop-filter: blur(5px);
-    border: 1px solid rgba(255,255,255,0.2) !important;
+${sectionClass} .stat - item,
+    ${sectionClass} .feature - card {
+    background: rgba(255, 255, 255, 0.15)!important;
+    backdrop - filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.2)!important;
 }
 
-${sectionClass} .stat-number,
-${sectionClass} .stat-label,
-${sectionClass} .feature-icon i,
-${sectionClass} .feature-title,
-${sectionClass} .feature-desc {
-    color: #fff !important;
+${sectionClass} .stat - number,
+    ${sectionClass} .stat - label,
+        ${sectionClass} .feature - icon i,
+            ${sectionClass} .feature - title,
+                ${sectionClass} .feature - desc {
+    color: #fff!important;
 }
 `;
                     break;
@@ -2779,30 +2876,30 @@ ${sectionClass} .feature-desc {
                 case 'dark':
                     css += `
 ${sectionClass} {
-    background: var(--color-dark) !important;
+    background: var(--color - dark)!important;
 }
 
-${sectionClass} .section-title,
-${sectionClass} .section-label,
-${sectionClass} .section-desc,
-${sectionClass} h1, ${sectionClass} h2, ${sectionClass} h3,
-${sectionClass} h4, ${sectionClass} h5, ${sectionClass} h6,
-${sectionClass} p, ${sectionClass} li {
-    color: #fff !important;
+${sectionClass} .section - title,
+    ${sectionClass} .section - label,
+        ${sectionClass} .section - desc,
+            ${sectionClass} h1, ${sectionClass} h2, ${sectionClass} h3,
+                ${sectionClass} h4, ${sectionClass} h5, ${sectionClass} h6,
+                    ${sectionClass} p, ${sectionClass} li {
+    color: #fff!important;
 }
 
-${sectionClass} .section-label {
-    color: var(--color-secondary-light) !important;
+${sectionClass} .section - label {
+    color: var(--color - secondary - light)!important;
 }
 
 /* Ensure ALL text elements in dark sections are white */
 ${sectionClass} span,
-${sectionClass} div,
-${sectionClass} .stat-number,
-${sectionClass} .stat-label,
-${sectionClass} .room-price strong,
-${sectionClass} .room-price {
-    color: #fff !important;
+    ${sectionClass} div,
+        ${sectionClass} .stat - number,
+            ${sectionClass} .stat - label,
+                ${sectionClass} .room - price strong,
+                    ${sectionClass} .room - price {
+    color: #fff!important;
 }
 
 /* Make cards semi-transparent white on dark to keep contrast? 
@@ -2811,38 +2908,38 @@ ${sectionClass} .room-price {
    CSS Cascade: .section-dark p { color: #fff } might override .card p { color: #333 }
    We need to protect internal card text if card is white.
 */
-${sectionClass} .room-card,
-${sectionClass} .testimonial-card,
-${sectionClass} .pricing-card,
-${sectionClass} .attraction-card,
-${sectionClass} .stat-item {
-    background: var(--color-white) !important;
+${sectionClass} .room - card,
+    ${sectionClass} .testimonial - card,
+        ${sectionClass} .pricing - card,
+            ${sectionClass} .attraction - card,
+                ${sectionClass} .stat - item {
+    background: var(--color - white)!important;
     /* Reset text color inside white cards */
 }
 
-${sectionClass} .room-card *, 
-${sectionClass} .testimonial-card *,
-${sectionClass} .pricing-card *,
-${sectionClass} .attraction-card *,
-${sectionClass} .stat-item * {
-    color: initial; /* Reset to inherit from card, or specific dark color */
-}
+${sectionClass} .room - card *,
+    ${sectionClass} .testimonial - card *,
+        ${sectionClass} .pricing - card *,
+            ${sectionClass} .attraction - card *,
+                ${sectionClass} .stat - item * {
+                    color: initial; /* Reset to inherit from card, or specific dark color */
+                }
 
-${sectionClass} .stat-number { color: var(--color-primary) !important; }
-${sectionClass} .stat-label { color: var(--color-gray) !important; }
+${sectionClass} .stat - number { color: var(--color - primary)!important; }
+${sectionClass} .stat - label { color: var(--color - gray)!important; }
 `;
                     break;
 
                 case 'pattern':
                     css += `
 ${sectionClass} {
-    background: 
-        repeating-linear-gradient(
-            45deg,
-            var(--color-light),
-            var(--color-light) 10px,
-            var(--color-white) 10px,
-            var(--color-white) 20px
+    background:
+    repeating - linear - gradient(
+        45deg,
+            var(--color - light),
+            var(--color - light) 10px,
+            var(--color - white) 10px,
+            var(--color - white) 20px
         ) !important;
 }
 `;

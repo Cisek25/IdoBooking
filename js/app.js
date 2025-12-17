@@ -321,6 +321,25 @@ function initBuilder(recommendation) {
         appState.globalSettings.fonts = { ...template.fonts };
         appState.enabledSections = [...template.sections];
 
+        // DIVERSITY: Randomize section order and enable optional sections
+        if (appState.wizardData && !appState.wizardData.skipped) {
+            // 1. Randomly add optional sections that fit the theme
+            const optionalSections = ['attractions', 'testimonials', 'faq', 'dining', 'spa', 'events', 'transport', 'rules', 'cta'];
+            optionalSections.forEach(sec => {
+                if (!appState.enabledSections.includes(sec) && Math.random() > 0.6) {
+                    appState.enabledSections.push(sec);
+                }
+            });
+
+            // 2. Shuffle sections (keep Intro first)
+            const contentSections = appState.enabledSections.filter(s => s !== 'intro');
+            for (let i = contentSections.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [contentSections[i], contentSections[j]] = [contentSections[j], contentSections[i]];
+            }
+            appState.enabledSections = ['intro', ...contentSections];
+        }
+
         // Update AI recommendation UI
         document.getElementById('ai-template-name').textContent = template.name;
         document.getElementById('ai-template-desc').textContent = template.description;
@@ -573,6 +592,22 @@ function renderSectionEditorForm(sectionId, content) {
     const defaultContent = appState.sectionContent[sectionId] || {};
     const mergedContent = { ...defaultContent, ...content };
 
+
+    // Wariant sekcji (tylko dla intro)
+    if (sectionId === 'intro' && window.ABOUT_SECTION_VARIANTS) {
+        const currentVariant = appState.aboutVariant || 'hotel-elegant';
+        html += `
+            <div class="form-group">
+                <label>Wariant układu</label>
+                <select id="intro-variant-select" class="form-control">
+                    ${Object.values(window.ABOUT_SECTION_VARIANTS).map(v =>
+            `<option value="${v.id}" ${v.id === currentVariant ? 'selected' : ''}>${v.name}</option>`
+        ).join('')}
+                </select>
+            </div>
+        `;
+    }
+
     // Tytuł sekcji - zawsze pokazuj
     html += `
         <div class="form-group">
@@ -760,6 +795,15 @@ function saveSectionContent() {
     if (subtitleEl) content.subtitle = subtitleEl.value;
     if (descEl) content.description = descEl.value;
 
+    // Save Intro Variant
+    if (sectionId === 'intro') {
+        const variantSelect = document.getElementById('intro-variant-select');
+        if (variantSelect) {
+            appState.aboutVariant = variantSelect.value;
+            console.log('Saved About Variant:', appState.aboutVariant);
+        }
+    }
+
     // Get section-specific fields
     switch (sectionId) {
         case 'attractions':
@@ -826,52 +870,45 @@ function closeSectionEditor() {
 // ============================================
 function addDefaultObjects() {
     // Get property type from wizard data
-    let propertyType = 'hotel-3star'; // default
-
+    let wizardType = 'hotel-3';
     if (appState.wizardData) {
-        // Map wizard property-type answers to preset keys
-        const typeMapping = {
-            'hotel-3': 'hotel-3star',
-            'hotel-4': 'hotel-4star',
-            'hotel-5': 'hotel-5star',
-            'boutique': 'boutique',
-            'pension': 'pension',
-            'hostel': 'hostel',
-            'apartments': 'apartments',
-            'resort': 'resort',
-            'glamping': 'glamping',
-            'bnb': 'pension',           // B&B -> Pensjonat preset
-            'motel': 'hostel',          // Motel -> Hostel preset (budget)
-            'villa': 'boutique',        // Willa -> Boutique preset
-            'chalet': 'gorski',         // Domek górski -> Górski preset
-            'cottage': 'agroturystyka', // Domek letniskowy -> Agro preset
-            'farm-stay': 'agroturystyka' // Agroturystyka
-        };
-
-        const wizardType = appState.wizardData['property-type'];
-        if (wizardType && typeMapping[wizardType]) {
-            propertyType = typeMapping[wizardType];
+        if (appState.wizardData.answers && appState.wizardData.answers['property-type']) {
+            wizardType = appState.wizardData.answers['property-type'];
+        } else if (appState.wizardData['property-type']) {
+            wizardType = appState.wizardData['property-type'];
         }
     }
 
-    // Get rooms from presets
-    let presetRooms = [];
-    if (window.ROOM_PRESETS && window.ROOM_PRESETS[propertyType]) {
-        presetRooms = window.ROOM_PRESETS[propertyType].rooms;
-    } else {
-        // Fallback to hotel-3star if preset not found
-        presetRooms = window.ROOM_PRESETS?.['hotel-3star']?.rooms || [];
+    console.log('Generating objects for type:', wizardType);
+
+    // Use functionality from data/room-presets.js if available
+    let presets = [];
+    if (window.getRoomPresets) {
+        presets = window.getRoomPresets(wizardType);
     }
 
-    // Add rooms with unique IDs
-    presetRooms.forEach(room => {
-        appState.objects.push({
-            ...room,
-            id: appState.nextObjectId++
-        });
-    });
+    // Fallback if no presets or script not loaded
+    if (!presets || presets.length === 0) {
+        console.warn('No presets found, using default hotel rooms');
+        presets = [
+            { name: 'Pokój Standard', type: 'room', price: 250, personCount: 2, image: 'https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg?auto=compress&cs=tinysrgb&w=800', description: 'Komfortowy pokój z łóżkiem typu King-size.' },
+            { name: 'Pokój Deluxe', type: 'room', price: 350, personCount: 2, image: 'https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg?auto=compress&cs=tinysrgb&w=800', description: 'Większy metraż i widok na ogród.' },
+            { name: 'Apartament', type: 'suite', price: 500, personCount: 4, image: 'https://images.pexels.com/photos/271618/pexels-photo-271618.jpeg?auto=compress&cs=tinysrgb&w=800', description: 'Przestronny apartament z aneksem kuchennym.' }
+        ];
+    }
 
-    console.log(`✅ Loaded ${presetRooms.length} rooms from preset: ${propertyType}`);
+    // Convert presets to objects
+    appState.objects = presets.map((p, index) => ({
+        id: index + 1,
+        name: p.name,
+        type: p.type,
+        price: p.price,
+        persons: p.personCount,
+        image: p.image,
+        description: p.description
+    }));
+
+    appState.nextObjectId = appState.objects.length + 1;
     renderObjectsGrid();
 }
 
@@ -952,10 +989,10 @@ function renderAmenitiesSelector(selectedAmenities) {
 
         category.items.forEach(item => {
             const isSelected = selectedAmenities.includes(item.id);
-            html += `<label class="amenity-label ${isSelected ? 'selected' : ''}" 
+            html += `<label class="amenity-label ${isSelected ? 'selected' : ''}"
                             data-id="${item.id}"
                             onclick="toggleAmenity(this, '${item.id}')">
-                <input type="checkbox" value="${item.id}" ${isSelected ? 'checked' : ''} 
+                <input type="checkbox" value="${item.id}" ${isSelected ? 'checked' : ''}
                        style="display: none;" class="amenity-checkbox">
                 <i class="fas ${item.icon}"></i>
                 <span>${item.name}</span>
@@ -1880,11 +1917,50 @@ function setAtmosphericEffect(effectType) {
     appState.effectsSettings.atmosphericEffect = effectType;
     console.log('🌨️ Atmospheric effect set to:', effectType);
 
+    // Show/hide duration controls
+    const durationControls = document.getElementById('effect-duration-controls');
+    if (durationControls) {
+        if (effectType && effectType !== 'none') {
+            durationControls.style.display = 'block';
+            // Update duration value display
+            const val = document.getElementById('effect-duration')?.value;
+            const perm = document.getElementById('effect-permanent')?.checked;
+            updateEffectDuration(val, perm);
+        } else {
+            durationControls.style.display = 'none';
+        }
+    }
+
     // Re-render preview to apply effect
     Preview.debouncedRender();
 }
 
+// Add updateEffectDuration function if missing or ensure it's exposed
+function updateEffectDuration(value, isPermanent) {
+    if (value === undefined) value = document.getElementById('effect-duration')?.value || 60;
+    if (isPermanent === undefined) isPermanent = document.getElementById('effect-permanent')?.checked || false;
+
+    // Save to state
+    if (!appState.effectsSettings.duration) appState.effectsSettings.duration = {};
+    appState.effectsSettings.duration.value = parseInt(value);
+    appState.effectsSettings.duration.permanent = isPermanent;
+
+    const label = document.getElementById('duration-value');
+    if (label) {
+        label.textContent = isPermanent ? '∞' : value + 's';
+    }
+
+    // Update canvas if exists
+    const canvas = document.getElementById('atmospheric-canvas'); // In preview context? No, preview handles its own.
+    // The Preview.render() will pass these settings to the iframe script.
+    Preview.debouncedRender();
+}
+
 window.setAtmosphericEffect = setAtmosphericEffect;
+window.updateEffectDuration = updateEffectDuration;
+window.togglePermanentEffect = function (checked) {
+    updateEffectDuration(undefined, checked);
+};
 
 // ============================================
 // MAIN CONTENT UPDATES
@@ -1965,7 +2041,272 @@ function toggleFaqEditor() {
 window.toggleFaqEditor = toggleFaqEditor;
 
 // Setup fullscreen button listener and collapsible sections
+// Setup fullscreen button listener and collapsible sections
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btn-fullscreen')?.addEventListener('click', toggleFullscreen);
     initCollapsibleSections();
+    renderGradientButtons();
 });
+
+// ============================================
+// ATMOSPHERIC EFFECT DURATION CONTROLS
+// ============================================
+let effectDurationTimeout = null;
+
+function updateEffectDuration(value) {
+    const valueEl = document.getElementById('duration-value');
+    if (valueEl) {
+        valueEl.textContent = value + 's';
+    }
+
+    appState.effectsSettings.effectDuration = parseInt(value);
+
+    // If not permanent, schedule effect stop
+    const permanentCheck = document.getElementById('effect-permanent');
+    if (permanentCheck && !permanentCheck.checked) {
+        scheduleEffectStop(parseInt(value));
+    }
+}
+
+function togglePermanentEffect(isPermanent) {
+    const durationRange = document.getElementById('effect-duration');
+    const durationValue = document.getElementById('duration-value');
+
+    if (isPermanent) {
+        if (durationRange) durationRange.disabled = true;
+        if (durationValue) durationValue.textContent = '∞';
+
+        // Cancel any scheduled stop
+        if (effectDurationTimeout) {
+            clearTimeout(effectDurationTimeout);
+            effectDurationTimeout = null;
+        }
+
+        appState.effectsSettings.effectPermanent = true;
+    } else {
+        if (durationRange) durationRange.disabled = false;
+        const duration = durationRange ? parseInt(durationRange.value) : 30;
+        if (durationValue) durationValue.textContent = duration + 's';
+
+        appState.effectsSettings.effectPermanent = false;
+        scheduleEffectStop(duration);
+    }
+}
+
+function scheduleEffectStop(seconds) {
+    // Clear any existing timeout
+    if (effectDurationTimeout) {
+        clearTimeout(effectDurationTimeout);
+    }
+
+    effectDurationTimeout = setTimeout(() => {
+        // Stop the effect
+        if (window.VisualEffects) {
+            VisualEffects.destroy();
+        }
+
+        // Reset the radio buttons
+        const noneRadio = document.querySelector('input[name="atmospheric-effect"][value="none"]');
+        if (noneRadio) noneRadio.checked = true;
+
+        appState.effectsSettings.atmosphericEffect = 'none';
+
+        // Hide duration controls
+        const durationControls = document.getElementById('effect-duration-controls');
+        if (durationControls) durationControls.style.display = 'none';
+
+        console.log('⏰ Effect duration expired');
+    }, seconds * 1000);
+}
+
+// Extend setAtmosphericEffect to show duration controls
+const originalSetAtmosphericEffect = window.setAtmosphericEffect;
+window.setAtmosphericEffect = function (effectType) {
+    originalSetAtmosphericEffect(effectType);
+
+    const durationControls = document.getElementById('effect-duration-controls');
+    if (durationControls) {
+        durationControls.style.display = effectType === 'none' ? 'none' : 'block';
+    }
+
+    // Start with permanent by default
+    const permanentCheck = document.getElementById('effect-permanent');
+    if (permanentCheck && permanentCheck.checked && effectType !== 'none') {
+        // Already permanent, no action needed
+    } else if (!permanentCheck?.checked && effectType !== 'none') {
+        // Schedule stop based on current duration
+        const durationRange = document.getElementById('effect-duration');
+        const duration = durationRange ? parseInt(durationRange.value) : 30;
+        scheduleEffectStop(duration);
+    }
+};
+
+window.updateEffectDuration = updateEffectDuration;
+window.togglePermanentEffect = togglePermanentEffect;
+
+// ============================================
+// IMPROVED AUTO-RECOVERY WITH STYLED NOTIFICATION
+// ============================================
+function showRecoveryNotification(savedDate) {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = 'recovery-notification';
+    notification.innerHTML = `
+        <i class="fas fa-clock-rotate-left" style="font-size: 1.5rem;"></i>
+        <div>
+            <strong>Znaleziono zapisany projekt</strong>
+            <div style="font-size: 0.85rem; opacity: 0.9;">z ${savedDate.toLocaleString()}</div>
+        </div>
+        <button onclick="restoreAutoSave()" style="margin-left: auto;">
+            <i class="fas fa-undo"></i> Przywróć
+        </button>
+        <button class="dismiss-btn" onclick="dismissRecovery()">
+            <i class="fas fa-times"></i>
+        </button>
+    `;
+
+    document.body.appendChild(notification);
+}
+
+function restoreAutoSave() {
+    try {
+        const saved = localStorage.getItem(AUTOSAVE_KEY);
+        if (!saved) return;
+
+        const projectData = JSON.parse(saved);
+        Object.assign(appState, projectData.appState);
+
+        // Switch to builder mode
+        document.getElementById('wizard-panel').classList.add('hidden');
+        document.getElementById('builder-panel').classList.remove('hidden');
+
+        renderSectionsChecklist();
+        renderObjectsGrid();
+        renderFaqList();
+        Preview.render();
+
+        // Sync UI with restored state
+        if (appState.globalSettings.colors) {
+            document.getElementById('color-primary').value = appState.globalSettings.colors.primary;
+            document.getElementById('color-secondary').value = appState.globalSettings.colors.secondary;
+            document.getElementById('color-accent').value = appState.globalSettings.colors.accent;
+        }
+
+        console.log('✅ Restored from auto-save');
+
+        // Show success indicator
+        showAutoSaveIndicator('Projekt przywrócony!');
+    } catch (err) {
+        console.error('Error restoring auto-save:', err);
+    }
+
+    // Remove notification
+    dismissRecovery();
+}
+
+function dismissRecovery() {
+    const notification = document.querySelector('.recovery-notification');
+    if (notification) {
+        notification.remove();
+    }
+}
+
+function showAutoSaveIndicator(message) {
+    const indicator = document.createElement('div');
+    indicator.className = 'auto-save-indicator';
+    indicator.innerHTML = `<i class="fas fa-check-circle"></i> ${message || 'Zapisano automatycznie'}`;
+    document.body.appendChild(indicator);
+
+    // Remove after animation
+    setTimeout(() => indicator.remove(), 2000);
+}
+
+// Override checkAutoSave to use styled notification
+const originalCheckAutoSave = window.checkAutoSave;
+window.checkAutoSave = function () {
+    try {
+        const saved = localStorage.getItem(AUTOSAVE_KEY);
+        if (!saved) return;
+
+        const projectData = JSON.parse(saved);
+        const savedDate = new Date(projectData.savedAt);
+        const now = new Date();
+        const hoursSince = (now - savedDate) / (1000 * 60 * 60);
+
+        // Only offer to restore if saved less than 24 hours ago
+        if (hoursSince < 24) {
+            showRecoveryNotification(savedDate);
+        }
+    } catch (err) {
+        console.error('Error checking auto-save:', err);
+    }
+};
+
+window.restoreAutoSave = restoreAutoSave;
+window.dismissRecovery = dismissRecovery;
+window.showAutoSaveIndicator = showAutoSaveIndicator;
+
+// ============================================
+// AUTO-SAVE ON SIGNIFICANT CHANGES
+// ============================================
+// Debounced auto-save on changes
+let autoSaveDebounceTimer = null;
+function triggerAutoSave() {
+    if (appState.mode !== 'builder') return;
+
+    if (autoSaveDebounceTimer) {
+        clearTimeout(autoSaveDebounceTimer);
+    }
+
+    autoSaveDebounceTimer = setTimeout(() => {
+        autoSave();
+        showAutoSaveIndicator();
+    }, 5000); // Wait 5 seconds after last change
+}
+
+// Make links open in new tab to preserve project
+document.addEventListener('click', (e) => {
+    const link = e.target.closest('a[href^="http"]');
+    if (link && appState.mode === 'builder') {
+        // Auto-save before navigating
+        autoSave();
+
+        // Ensure external links open in new tab
+        if (!link.hasAttribute('target')) {
+            link.setAttribute('target', '_blank');
+            link.setAttribute('rel', 'noopener noreferrer');
+        }
+    }
+});
+
+function renderGradientButtons() {
+    const categories = {
+        warm: ['sunset', 'coral', 'rose-gold', 'volcano', 'sahara', 'terracotta', 'coffee', 'copper', 'peach', 'amber', 'sunset-vibes', 'sandy-gold', 'desert-gold', 'golden-sands', 'autumn-glow', 'summer-heat', 'cherry-blossom', 'blush'],
+        cool: ['ocean', 'arctic', 'midnight', 'twilight', 'marine', 'peacock', 'steel', 'ice', 'azure', 'neptune', 'morning-dew', 'deep-ocean', 'northern-lights', 'mystic-river', 'winter-blues', 'aqua-splash'],
+        luxury: ['aurora', 'royal', 'lavender', 'champagne', 'cyberpunk', 'wine', 'neon', 'candy', 'galaxy', 'noir', 'velvet', 'plum', 'royal-velvet', 'mystic-mauve', 'urban-night', 'dark-volcano', 'silver-lining', 'bronze', 'midnight-bloom', 'berry-juice'],
+        seasonal: ['arctic-frost', 'polar-night', 'frozen-lake', 'winter-forest', 'nordic-lights', 'snowstorm', 'ice-cave', 'frosty-morning', 'glacial', 'christmas', 'midnight-city', 'autumn-leaves', 'harvest', 'spring-bloom', 'summer-sunset', 'tropical-paradise', 'mountain-dawn', 'ocean-breeze', 'forest-mist', 'desert-dusk', 'lavender-fields', 'rainy-day', 'golden-hour', 'mountain-mist', 'tropical-jungle']
+    };
+
+    const presets = CSSEngine.gradientPresets;
+
+    Object.keys(categories).forEach(cat => {
+        const container = document.querySelector(`.gradients-grid[data-category="${cat}"]`);
+        if (!container) return;
+
+        let html = '';
+        categories[cat].forEach(key => {
+            const gradient = presets[key];
+            if (gradient) {
+                html += `
+                    <button class="gradient-btn ${appState.effectsSettings.gradientPreset === key ? 'active' : ''}" 
+                            data-gradient="${key}" 
+                            onclick="setGradient('${key}')" 
+                            title="${key}">
+                        <span style="background: ${gradient}"></span>
+                    </button>`;
+            }
+        });
+        container.innerHTML = html;
+    });
+}
+window.renderGradientButtons = renderGradientButtons;

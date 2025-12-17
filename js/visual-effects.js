@@ -195,29 +195,30 @@ const VisualEffects = {
     },
 
     // ============================================
-    // AURORA BOREALIS EFFECT 🌌
+    // AURORA BOREALIS EFFECT 🌌 (Reduced intensity - 50% less)
     // ============================================
     initAurora() {
         this.auroraTime = 0;
+        // Much lower opacity for subtle effect
         this.auroraWaves = [
-            { color: 'rgba(0, 255, 127, 0.3)', speed: 0.002, amplitude: 50, offset: 0 },
-            { color: 'rgba(138, 43, 226, 0.25)', speed: 0.003, amplitude: 40, offset: 100 },
-            { color: 'rgba(0, 191, 255, 0.2)', speed: 0.0025, amplitude: 60, offset: 200 }
+            { color: 'rgba(0, 255, 127, 0.12)', speed: 0.0015, amplitude: 30, offset: 0 },
+            { color: 'rgba(138, 43, 226, 0.10)', speed: 0.002, amplitude: 25, offset: 60 },
+            { color: 'rgba(0, 191, 255, 0.08)', speed: 0.0018, amplitude: 35, offset: 120 }
         ];
     },
 
     drawAurora() {
-        this.auroraTime += 1 * this.intensity;
-        const height = this.canvas.height * 0.4;
+        this.auroraTime += 0.5 * this.intensity; // Slower animation
+        const height = this.canvas.height * 0.25; // Smaller coverage area
 
         this.auroraWaves.forEach(wave => {
             this.ctx.beginPath();
             this.ctx.moveTo(0, height);
 
-            for (let x = 0; x <= this.canvas.width; x += 5) {
+            for (let x = 0; x <= this.canvas.width; x += 8) { // Smoother curves
                 const y = height +
-                    Math.sin((x + this.auroraTime * wave.speed * 100) * 0.01) * wave.amplitude +
-                    Math.sin((x + this.auroraTime * wave.speed * 50) * 0.02) * (wave.amplitude / 2) +
+                    Math.sin((x + this.auroraTime * wave.speed * 80) * 0.008) * wave.amplitude +
+                    Math.sin((x + this.auroraTime * wave.speed * 40) * 0.015) * (wave.amplitude / 3) +
                     wave.offset;
                 this.ctx.lineTo(x, y);
             }
@@ -226,9 +227,9 @@ const VisualEffects = {
             this.ctx.lineTo(0, 0);
             this.ctx.closePath();
 
-            const gradient = this.ctx.createLinearGradient(0, 0, 0, height + 100);
+            const gradient = this.ctx.createLinearGradient(0, 0, 0, height + 60);
             gradient.addColorStop(0, 'rgba(0,0,0,0)');
-            gradient.addColorStop(0.5, wave.color);
+            gradient.addColorStop(0.4, wave.color);
             gradient.addColorStop(1, 'rgba(0,0,0,0)');
 
             this.ctx.fillStyle = gradient;
@@ -279,81 +280,105 @@ const VisualEffects = {
     },
 
     // ============================================
-    // STORM EFFECT ⛈️
+    // STORM EFFECT ⛈️ (Localized lightning, no full-screen flash)
     // ============================================
     initStorm() {
         this.initRain();
-        // Storm specific: thicker rain lines if intensity high
-        if (this.intensity > 1.2) {
-            this.ctx.lineWidth = 2;
-        }
         this.lightningTimer = 0;
         this.nextLightning = Math.random() * 300 + 100;
-        this.isFlashing = false;
-        this.flashOpacity = 0;
     },
 
     drawStorm() {
-        this.drawRain(); // Reuse rain logic
+        this.drawRain();
 
-        // Lightning Logic - less frequent and less intense
         this.lightningTimer++;
         if (this.lightningTimer > this.nextLightning) {
-            this.isFlashing = true;
-            // Much lower opacity for less jarring effect (max 0.3 instead of 0.8)
-            this.flashOpacity = 0.25 * (Math.min(this.intensity, 1.0));
+            this.triggerLightning();
             this.lightningTimer = 0;
-            // Much less frequent lightning
-            this.nextLightning = (Math.random() * 600 + 400) / this.intensity;
-        }
-
-        if (this.isFlashing) {
-            this.ctx.fillStyle = `rgba(255, 255, 255, ${this.flashOpacity})`;
-            this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-
-            // Slower fade for smoother transition
-            this.flashOpacity -= 0.03;
-            if (this.flashOpacity <= 0) {
-                this.isFlashing = false;
-            }
+            this.nextLightning = (Math.random() * 400 + 200) / this.intensity;
         }
     },
 
+    triggerLightning() {
+        // Draw lightning bolt without full screen flash
+        const startX = Math.random() * this.canvas.width;
+        const startY = 0;
+
+        this.ctx.beginPath();
+        this.ctx.moveTo(startX, startY);
+
+        let x = startX;
+        let y = startY;
+
+        while (y < this.canvas.height) {
+            x += (Math.random() - 0.5) * 50;
+            y += Math.random() * 20 + 10;
+            this.ctx.lineTo(x, y);
+        }
+
+        this.ctx.strokeStyle = `rgba(255, 255, 255, ${0.4 + Math.random() * 0.4})`;
+        this.ctx.lineWidth = 2 + Math.random() * 3;
+        this.ctx.shadowBlur = 20;
+        this.ctx.shadowColor = 'rgba(255, 255, 255, 0.8)';
+        this.ctx.stroke();
+
+        // Reset shadow
+        this.ctx.shadowBlur = 0;
+
+        // Subtle sky flash (very low opacity)
+        this.ctx.fillStyle = `rgba(255, 255, 255, ${0.1 + Math.random() * 0.1})`;
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    },
+
     // ============================================
-    // DRIZZLE / MIST EFFECT 🌫️
+    // DRIZZLE / MIST EFFECT 🌫️ (More visible particles)
     // ============================================
     initDrizzle() {
         this.particles = [];
-        const baseCount = Math.floor(this.canvas.width / 6);
+        // More particles for better visibility
+        const baseCount = Math.floor(this.canvas.width / 4);
         const count = Math.floor(baseCount * this.intensity);
 
         for (let i = 0; i < count; i++) {
             this.particles.push({
                 x: Math.random() * this.canvas.width,
                 y: Math.random() * this.canvas.height,
-                radius: Math.random() * 1 + 0.5,
-                speedY: Math.random() * 2 + 1,
-                speedX: Math.random() * 0.5 - 0.25,
-                opacity: Math.random() * 0.2 + 0.1
+                radius: Math.random() * 2 + 1, // Larger particles
+                speedY: Math.random() * 2.5 + 1.5,
+                speedX: Math.random() * 0.8 - 0.4,
+                opacity: Math.random() * 0.4 + 0.3 // Higher opacity for visibility
             });
         }
 
-        // Add fog layer
         this.fogOpacity = 0;
     },
 
     drawDrizzle() {
-        // Draw fog - denser with higher intensity
-        this.fogOpacity = (0.15 + Math.sin(Date.now() / 2000) * 0.05) * this.intensity;
-        this.ctx.fillStyle = `rgba(200, 210, 220, ${Math.min(this.fogOpacity, 0.5)})`;
-        this.ctx.fillRect(0, this.canvas.height * 0.6, this.canvas.width, this.canvas.height * 0.4);
+        // Draw subtle fog layer
+        this.fogOpacity = (0.1 + Math.sin(Date.now() / 3000) * 0.03) * this.intensity;
+        const fogGradient = this.ctx.createLinearGradient(0, this.canvas.height * 0.5, 0, this.canvas.height);
+        fogGradient.addColorStop(0, 'rgba(180, 190, 200, 0)');
+        fogGradient.addColorStop(0.5, `rgba(180, 190, 200, ${Math.min(this.fogOpacity, 0.25)})`);
+        fogGradient.addColorStop(1, `rgba(160, 170, 180, ${Math.min(this.fogOpacity * 1.5, 0.35)})`);
+        this.ctx.fillStyle = fogGradient;
+        this.ctx.fillRect(0, this.canvas.height * 0.4, this.canvas.width, this.canvas.height * 0.6);
 
-        // Draw drizzle
-        this.ctx.fillStyle = 'rgba(174, 194, 224, 0.4)';
+        // Draw more visible drizzle drops
         this.particles.forEach(p => {
+            // Draw elongated drops with glow
+            const gradient = this.ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.radius * 2);
+            gradient.addColorStop(0, `rgba(200, 215, 235, ${p.opacity})`);
+            gradient.addColorStop(1, 'rgba(200, 215, 235, 0)');
+
+            this.ctx.fillStyle = gradient;
             this.ctx.beginPath();
-            this.ctx.ellipse(p.x, p.y, p.radius, p.radius * 3, 0, 0, Math.PI * 2);
-            this.ctx.globalAlpha = p.opacity;
+            this.ctx.ellipse(p.x, p.y, p.radius, p.radius * 4, 0, 0, Math.PI * 2);
+            this.ctx.fill();
+
+            // Core drop (brighter)
+            this.ctx.fillStyle = `rgba(220, 230, 245, ${p.opacity * 0.8})`;
+            this.ctx.beginPath();
+            this.ctx.ellipse(p.x, p.y, p.radius * 0.5, p.radius * 2, 0, 0, Math.PI * 2);
             this.ctx.fill();
 
             p.y += p.speedY;
@@ -364,66 +389,71 @@ const VisualEffects = {
                 p.x = Math.random() * this.canvas.width;
             }
         });
-        this.ctx.globalAlpha = 1;
     },
 
     // ============================================
-    // SUNRAYS EFFECT ☀️
+    // SUNRAYS EFFECT ☀️ (God Rays - Subtle, Angled, No Orb)
     // ============================================
     initSunrays() {
-        this.sunTime = 0;
         this.rays = [];
-        // More rays with intensity
-        const rayCount = Math.floor(12 * (0.8 + this.intensity * 0.4));
-
+        const rayCount = 5;
+        // Create wide, subtle beams
         for (let i = 0; i < rayCount; i++) {
             this.rays.push({
-                angle: (i / rayCount) * Math.PI * 2,
-                length: Math.random() * 200 + 400, // Longer rays
-                width: Math.random() * 30 + 20,
-                opacity: (Math.random() * 0.2 + 0.1) * this.intensity,
-                speed: Math.random() * 0.001 + 0.0005
+                x: this.canvas.width * 0.8 + (Math.random() * 200 - 100), // Top right area
+                y: -100,
+                angle: Math.PI / 3 + (Math.random() * 0.2 - 0.1), // Angled down-left
+                width: Math.random() * 150 + 100,
+                length: this.canvas.height * 1.5,
+                alpha: Math.random() * 0.15 + 0.05,
+                speed: Math.random() * 0.002 + 0.001
             });
         }
+        this.sunTime = 0;
     },
 
     drawSunrays() {
-        this.sunTime += 1;
-        const centerX = this.canvas.width * 0.85; // Top right sun position
-        const centerY = this.canvas.height * 0.1;
+        this.sunTime += 0.01;
 
-        // Draw sun glow
-        const glowSize = 150 * this.intensity;
-        const gradient = this.ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, glowSize);
-        gradient.addColorStop(0, 'rgba(255, 223, 100, 0.4)');
-        gradient.addColorStop(0.5, 'rgba(255, 180, 50, 0.2)');
-        gradient.addColorStop(1, 'rgba(255, 180, 50, 0)');
+        // 1. Warm overlay gradient (top-right corner)
+        const overlayGrad = this.ctx.createLinearGradient(
+            this.canvas.width, 0,
+            this.canvas.width * 0.5, this.canvas.height * 0.5
+        );
+        overlayGrad.addColorStop(0, `rgba(255, 240, 200, ${0.15 * this.intensity})`);
+        overlayGrad.addColorStop(1, 'rgba(255, 240, 200, 0)');
 
-        this.ctx.fillStyle = gradient;
-        this.ctx.beginPath();
-        this.ctx.arc(centerX, centerY, glowSize, 0, Math.PI * 2);
-        this.ctx.fill();
+        this.ctx.fillStyle = overlayGrad;
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-        // Draw rays
-        this.rays.forEach(ray => {
-            const angle = ray.angle + this.sunTime * ray.speed;
-            const x1 = centerX + Math.cos(angle) * 50;
-            const y1 = centerY + Math.sin(angle) * 50;
-            const x2 = centerX + Math.cos(angle) * ray.length;
-            const y2 = centerY + Math.sin(angle) * ray.length;
+        // 2. Draw Rays
+        this.ctx.save();
+        this.rays.forEach((ray, i) => {
+            // Pulse opacity slightly
+            const currentAlpha = ray.alpha + Math.sin(this.sunTime + i) * 0.02;
 
-            const rayGradient = this.ctx.createLinearGradient(x1, y1, x2, y2);
-            rayGradient.addColorStop(0, `rgba(255, 223, 100, ${ray.opacity})`);
-            rayGradient.addColorStop(1, 'rgba(255, 223, 100, 0)');
+            // Create ray gradient
+            const rayGrad = this.ctx.createLinearGradient(
+                0, 0,
+                Math.cos(ray.angle) * ray.width, Math.sin(ray.angle) * ray.length
+            );
+            rayGrad.addColorStop(0, `rgba(255, 250, 220, ${Math.max(0, currentAlpha * this.intensity)})`);
+            rayGrad.addColorStop(0.4, `rgba(255, 250, 220, ${Math.max(0, currentAlpha * 0.5 * this.intensity)})`);
+            rayGrad.addColorStop(1, 'rgba(255, 250, 220, 0)');
 
-            this.ctx.beginPath();
-            this.ctx.moveTo(x1, y1);
-            this.ctx.lineTo(x2, y2);
-            this.ctx.lineWidth = ray.width;
-            this.ctx.strokeStyle = rayGradient;
-            this.ctx.lineCap = 'round';
-            this.ctx.stroke();
+            this.ctx.translate(ray.x, ray.y);
+            this.ctx.rotate(ray.angle);
+
+            this.ctx.fillStyle = rayGrad;
+            this.ctx.fillRect(-ray.width / 2, 0, ray.width, ray.length);
+
+            // Reset transform for next ray
+            this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+            // Move ray slightly
+            ray.x += Math.cos(this.sunTime * ray.speed) * 0.5;
         });
+        this.ctx.restore();
     },
 
     // ============================================
