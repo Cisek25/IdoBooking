@@ -521,6 +521,7 @@ function handleSectionDrop(e) {
 
         renderSectionsChecklist();
         Preview.debouncedRender();
+        triggerAutoSave();
     }
 }
 
@@ -532,6 +533,7 @@ function moveSectionUp(sectionId) {
         appState.enabledSections[index] = temp;
         renderSectionsChecklist();
         Preview.debouncedRender();
+        triggerAutoSave();
     }
 }
 
@@ -543,6 +545,7 @@ function moveSectionDown(sectionId) {
         appState.enabledSections[index] = temp;
         renderSectionsChecklist();
         Preview.debouncedRender();
+        triggerAutoSave();
     }
 }
 
@@ -555,11 +558,13 @@ function toggleSection(sectionId) {
     }
     renderSectionsChecklist();
     Preview.debouncedRender();
+    triggerAutoSave();
 }
 
 function changeSectionBackground(sectionId, backgroundType) {
     appState.sectionBackgrounds[sectionId] = backgroundType;
     Preview.debouncedRender();
+    triggerAutoSave();
 }
 
 
@@ -898,15 +903,23 @@ function addDefaultObjects() {
     }
 
     // Convert presets to objects
-    appState.objects = presets.map((p, index) => ({
-        id: index + 1,
-        name: p.name,
-        type: p.type,
-        price: p.price,
-        persons: p.personCount,
-        image: p.image,
-        description: p.description
-    }));
+    appState.objects = presets.map((p, index) => {
+        let roomImage = p.image;
+        if (!roomImage && window.getRandomImage) {
+            roomImage = window.getRandomImage('rooms');
+        }
+
+        return {
+            id: index + 1,
+            name: p.name,
+            type: p.type,
+            price: p.price,
+            persons: p.personCount,
+            image: roomImage,
+            images: [roomImage],
+            description: p.description
+        };
+    });
 
     appState.nextObjectId = appState.objects.length + 1;
     renderObjectsGrid();
@@ -951,7 +964,7 @@ function editObject(objectId) {
             </div>
             <div class="form-group">
                 <label>URL zdjęcia</label>
-                <input type="text" id="obj-image" value="${obj.images?.[0] || ''}" placeholder="https://...">
+                <input type="text" id="obj-image" value="${obj.images?.[0] || obj.image || ''}" placeholder="https://...">
             </div>
             <div class="form-group">
                 <label>Badge (opcjonalnie)</label>
@@ -1074,8 +1087,8 @@ function renderObjectsGrid() {
     container.innerHTML = appState.objects.map(obj => `
         <div class="object-card">
             <div class="object-image">
-                ${obj.images?.[0]
-            ? `<img src="${obj.images[0]}" alt="${obj.name}">`
+                ${(obj.images?.[0] || obj.image)
+            ? `<img src="${obj.images?.[0] || obj.image}" alt="${obj.name}">`
             : '<i class="fas fa-image"></i>'
         }
             </div>
@@ -1123,6 +1136,56 @@ function updateAddress(value) {
 function updatePropertyName(value) {
     appState.globalSettings.propertyName = value;
     Preview.debouncedRender();
+}
+
+// ============================================
+// SYNC UI WITH STATE
+// ============================================
+function updateSidebarInputs() {
+    console.log('Syncing sidebar inputs with appState...');
+
+    // Property Name & Address
+    if (document.getElementById('property-name')) {
+        document.getElementById('property-name').value = appState.globalSettings.propertyName || '';
+    }
+    if (document.getElementById('location-address')) {
+        document.getElementById('location-address').value = appState.globalSettings.address || '';
+    }
+
+    // Intro Content
+    const intro = appState.sectionContent.intro;
+    if (document.getElementById('hero-title')) document.getElementById('hero-title').value = intro.title || '';
+    if (document.getElementById('hero-subtitle')) document.getElementById('hero-subtitle').value = intro.subtitle || '';
+    if (document.getElementById('property-desc')) document.getElementById('property-desc').value = intro.description || '';
+    if (document.getElementById('hero-image')) {
+        document.getElementById('hero-image').value = intro.mainImage || '';
+        const preview = document.getElementById('hero-image-preview');
+        if (preview && intro.mainImage) {
+            preview.style.backgroundImage = `url(${intro.mainImage})`;
+        }
+    }
+
+    // Colors
+    Object.keys(appState.globalSettings.colors).forEach(type => {
+        const input = document.querySelector(`input[type="color"][onchange*="updateColor('${type}'"]`);
+        if (input) input.value = appState.globalSettings.colors[type];
+    });
+
+    // Checkboxes (Sections)
+    const checklist = document.getElementById('sections-checklist');
+    if (checklist) {
+        const checkboxes = checklist.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(cb => {
+            cb.checked = appState.enabledSections.includes(cb.value);
+        });
+    }
+
+    // Gradient presets
+    if (appState.effectsSettings && appState.effectsSettings.gradientPreset) {
+        document.querySelectorAll('.gradient-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.getAttribute('data-gradient') === appState.effectsSettings.gradientPreset);
+        });
+    }
 }
 
 // ============================================
@@ -1444,9 +1507,86 @@ function resetApp() {
 }
 
 // ============================================
-// PROJECT SAVE / LOAD
+// TOOLTIP HANDLER (Fixes clipping issues)
 // ============================================
-const AUTOSAVE_KEY = 'idobooking-generator-autosave';
+function initTooltips() {
+    const tooltip = document.createElement('div');
+    tooltip.className = 'app-tooltip-popup';
+    tooltip.style.cssText = `
+        position: fixed;
+        background: #1e1e24; /* Dark for contrast against light theme */
+        color: #fff;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 12px;
+        z-index: 10000;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.2s;
+        max-width: 250px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        line-height: 1.4;
+    `;
+    document.body.appendChild(tooltip);
+
+    let activeElement = null;
+
+    document.addEventListener('mouseover', (e) => {
+        const target = e.target.closest('.help-tooltip');
+        if (!target) return;
+
+        const title = target.getAttribute('title') || target.getAttribute('data-title');
+        if (!title) return;
+
+        // Move title to data-title to prevent native tooltip
+        if (target.getAttribute('title')) {
+            target.setAttribute('data-title', title);
+            target.removeAttribute('title');
+        }
+
+        activeElement = target;
+        tooltip.textContent = title;
+        tooltip.style.opacity = '1';
+
+        // Position
+        const rect = target.getBoundingClientRect();
+
+        // Default: Top Center
+        let top = rect.top - tooltip.offsetHeight - 8;
+        let left = rect.left + (rect.width / 2) - (tooltip.offsetWidth / 2);
+
+        // Check overflow top
+        if (top < 10) {
+            top = rect.bottom + 8; // Move to bottom
+        }
+
+        // Check overflow right
+        if (left + tooltip.offsetWidth > window.innerWidth - 10) {
+            left = window.innerWidth - tooltip.offsetWidth - 10;
+        }
+
+        // Check overflow left
+        if (left < 10) {
+            left = 10;
+        }
+
+        tooltip.style.top = top + 'px';
+        tooltip.style.left = left + 'px';
+    });
+
+    document.addEventListener('mouseout', (e) => {
+        const target = e.target.closest('.help-tooltip');
+        if (target && target === activeElement) {
+            tooltip.style.opacity = '0';
+            activeElement = null;
+        }
+    });
+}
+
+// ============================================
+// AUTO RECOVERY SYSTEM
+// ============================================
+const AUTOSAVE_KEY = 'idobooking_generator_autosave';
 
 function saveProject() {
     const projectData = {
@@ -2247,8 +2387,138 @@ window.dismissRecovery = dismissRecovery;
 window.showAutoSaveIndicator = showAutoSaveIndicator;
 
 // ============================================
+// RANDOMIZATION LOGIC
+// ============================================
+function randomizeLayout(skipConfirm = false) {
+    if (!skipConfirm && !confirm('Czy na pewno chcesz wylosować nowy wygląd i układ? Obecne ustawienia zostaną zmienione.')) return;
+
+    console.log("🎲 Randomizing layout and theme...");
+
+    // 1. Pick a random template
+    const templateKeys = Object.keys(TEMPLATES);
+    const randomTemplateKey = templateKeys[Math.floor(Math.random() * templateKeys.length)];
+    const randomTemplate = TEMPLATES[randomTemplateKey];
+    appState.selectedTemplate = randomTemplate;
+
+    // Apply template colors and fonts
+    appState.globalSettings.colors = { ...randomTemplate.colors };
+    appState.globalSettings.fonts = { ...randomTemplate.fonts };
+
+    // 2. Sections Shuffle (Constraint: Intro -> Rooms -> Rest)
+    const alwaysFirst = ['intro', 'rooms'];
+    const otherSections = appState.enabledSections.filter(s => !alwaysFirst.includes(s));
+
+    // Shuffle others
+    for (let i = otherSections.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [otherSections[i], otherSections[j]] = [otherSections[j], otherSections[i]];
+    }
+
+    // Reassemble: Intro -> Rooms -> Shuffled Others
+    // Ensure 'rooms' is actually enabled before forcing it to 2nd position, otherwise just intro
+    const hasRooms = appState.enabledSections.includes('rooms');
+    appState.enabledSections = hasRooms ? ['intro', 'rooms', ...otherSections] : ['intro', ...otherSections];
+
+    // 3. Randomize Backgrounds
+    const bgTypes = ['white', 'light', 'gradient', 'pattern', 'dark'];
+    appState.enabledSections.forEach(sectionId => {
+        if (sectionId === 'intro') {
+            appState.sectionBackgrounds[sectionId] = Math.random() > 0.6 ? 'white' : (Math.random() > 0.5 ? 'light' : 'dark');
+        } else if (sectionId === 'gallery') {
+            appState.sectionBackgrounds[sectionId] = 'white'; // Gallery looks best on white
+        } else {
+            appState.sectionBackgrounds[sectionId] = bgTypes[Math.floor(Math.random() * bgTypes.length)];
+        }
+    });
+
+    // 4. Randomize About Variant & Content
+    if (window.ABOUT_SECTION_VARIANTS) {
+        let variants = Object.keys(window.ABOUT_SECTION_VARIANTS);
+        const category = randomTemplate.category;
+
+        // Filter variants by category if possible
+        let matchedVariants = variants.filter(v => {
+            const variantObj = window.ABOUT_SECTION_VARIANTS[v];
+            return variantObj.category === category;
+        });
+
+        // Fallback to all if no specific match
+        if (matchedVariants.length === 0) matchedVariants = variants;
+
+        const chosenVariantId = matchedVariants[Math.floor(Math.random() * matchedVariants.length)];
+        appState.aboutVariant = chosenVariantId;
+        const variant = window.ABOUT_SECTION_VARIANTS[chosenVariantId];
+
+        // Sync content
+        appState.sectionContent.intro.title = variant.title;
+        appState.sectionContent.intro.subtitle = variant.subtitle;
+        appState.sectionContent.intro.description = variant.description;
+
+        // Update property name if needed/wanted
+        appState.globalSettings.propertyName = variant.name || randomTemplate.name; // This effectively changes "everything on the right"
+    }
+
+    // 5. Randomize Hero Image
+    if (window.getRandomImage) {
+        const theme = randomTemplate.category === 'eco' ? 'nature' :
+            (randomTemplate.category === 'luxury' ? 'luxury' :
+                (randomTemplate.category === 'apartments' ? 'apartments' : 'luxury'));
+
+        const randomImage = window.getRandomImage(theme);
+        appState.sectionContent.intro.mainImage = randomImage;
+        appState.sectionContent.intro.image = randomImage; // Legacy support
+        appState.globalSettings.mainImage = randomImage;   // Crucial for preview sync
+
+        console.log('🎲 Randomized Hero Image:', randomImage);
+    }
+
+    // 6. Update Effects (Gradients)
+    const categoryGradients = {
+        'luxury': 'royal', 'family': 'coral', 'business': 'steel', 'romantic': 'lavender',
+        'eco': 'forest', 'apartments': 'modern', 'budget': 'sunset', 'modern': 'midnight'
+    };
+    const matchedGradient = categoryGradients[randomTemplate.category] || 'emerald';
+    appState.effectsSettings.gradientPreset = matchedGradient;
+    appState.effectsSettings.useGradients = Math.random() > 0.1;
+
+    // 7. Update UI
+    // CRITICAL: Update Sidebar Inputs to match randomized state
+    if (window.updateSidebarInputs) {
+        window.updateSidebarInputs();
+    }
+
+    renderSectionsChecklist();
+    Preview.debouncedRender();
+    triggerAutoSave();
+
+    // Show notification
+    showAutoSaveIndicator('Wylosowano nowy styl: ' + randomTemplate.name);
+}
+
+window.randomizeLayout = randomizeLayout;
+
+// ============================================
 // AUTO-SAVE ON SIGNIFICANT CHANGES
 // ============================================
+function autoSave() {
+    if (appState.mode !== 'builder') return;
+
+    try {
+        const dataToSave = {
+            appState: {
+                ...appState,
+                // Don't save large objects if unnecessary, but here we save everything
+                // except maybe volatile UI state
+            },
+            savedAt: new Date().toISOString()
+        };
+        localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(dataToSave));
+        console.log('💾 Auto-saved project state');
+    } catch (err) {
+        console.error('Error auto-saving:', err);
+    }
+}
+
 // Debounced auto-save on changes
 let autoSaveDebounceTimer = null;
 function triggerAutoSave() {
@@ -2310,3 +2580,23 @@ function renderGradientButtons() {
     });
 }
 window.renderGradientButtons = renderGradientButtons;
+// ============================================
+// THEME & TESTIMONIALS LOGIC
+// ============================================
+
+window.toggleTheme = function () {
+    document.body.classList.toggle('light-mode');
+    const isLight = document.body.classList.contains('light-mode');
+    const btn = document.getElementById('btn-theme-toggle');
+    if (btn) btn.innerHTML = isLight ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
+    // Save preference if needed, but not strictly required
+};
+
+window.updateTestimonialsSettings = function (key, value) {
+    if (!window.appState.testimonialsSettings) {
+        window.appState.testimonialsSettings = { displayMode: 'grid', count: 3 };
+    }
+    window.appState.testimonialsSettings[key] = value;
+    Preview.debouncedRender();
+    triggerAutoSave();
+};
