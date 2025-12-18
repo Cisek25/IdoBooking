@@ -1106,7 +1106,7 @@ const AboutSectionLayouts = {
     <div class="container">
         <div class="intro-grid">
             <div class="intro-image">
-                <img src="${settings.mainImage || 'https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg?auto=compress&cs=tinysrgb&w=800'}" alt="${settings.propertyName}">
+                <img src="${settings.mainImage || (window.getRandomImage ? window.getRandomImage('luxury') : 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=1200')}" alt="${settings.propertyName}">
             </div>
             <div class="intro-content">
                 <span class="section-label"><i class="fas ${variant.icon}"></i> ${variant.subtitle}</span>
@@ -1141,7 +1141,7 @@ const AboutSectionLayouts = {
                 </div>
             </div>
             <div class="intro-image">
-                <img src="${settings.mainImage || 'https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg?auto=compress&cs=tinysrgb&w=800'}" alt="${settings.propertyName}">
+                <img src="${settings.mainImage || (window.getRandomImage ? window.getRandomImage('luxury') : 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=1200')}" alt="${settings.propertyName}">
             </div>
         </div>
     </div>
@@ -1149,7 +1149,7 @@ const AboutSectionLayouts = {
 
     'full-width': (variant, settings) => `
 <section class="section-intro section-intro-fullwidth" id="o-nas">
-    <div class="intro-hero" style="background-image: url('${settings.mainImage || 'https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg?auto=compress&cs=tinysrgb&w=1600'}')">
+    <div class="intro-hero" style="background-image: url('${settings.mainImage || (window.getRandomImage ? window.getRandomImage('luxury') : 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=1200')}')">
         <div class="intro-hero-overlay"></div>
         <div class="container">
             <div class="intro-hero-content">
@@ -1191,7 +1191,7 @@ const AboutSectionLayouts = {
     <div class="container">
         <div class="intro-asymmetric-grid">
             <div class="intro-main-image">
-                <img src="${settings.mainImage || 'https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg?auto=compress&cs=tinysrgb&w=800'}" alt="${settings.propertyName}">
+                <img src="${settings.mainImage || (window.getRandomImage ? window.getRandomImage('luxury') : 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=1200')}" alt="${settings.propertyName}">
             </div>
             <div class="intro-side-content">
                 <span class="section-label"><i class="fas ${variant.icon}"></i> ${variant.subtitle}</span>

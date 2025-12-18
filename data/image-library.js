@@ -164,5 +164,18 @@ Object.assign(window.IMAGE_LIBRARY, {
         'https://images.unsplash.com/photo-1460317442991-0ec2aa249849?w=1200&q=80', // Urban
         'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=1200&q=80', // Office/Apt
         'https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=1200&q=80'  // Bedroom
+    ],
+    'boutique': [
+        ...window.IMAGE_LIBRARY.boutique, // Preserve existing
+        'https://images.unsplash.com/photo-1571896349842-6e53ce41e887?w=1200&q=80',
+        'https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=1200&q=80',
+        'https://images.unsplash.com/photo-1549294413-26f195200c16?w=1200&q=80',
+        'https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?w=1200&q=80',
+        'https://images.unsplash.com/photo-1586611292717-f828b167408c?w=1200&q=80',
+        'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=1200&q=80',
+        'https://images.unsplash.com/photo-1615874959474-d609969a20ed?w=1200&q=80',
+        'https://images.unsplash.com/photo-1596436889106-be35e843f974?w=1200&q=80',
+        'https://images.unsplash.com/photo-1591088398332-8a7791972843?w=1200&q=80',
+        'https://images.unsplash.com/photo-1590381105924-c72589b9ef3f?w=1200&q=80'
     ]
 });
