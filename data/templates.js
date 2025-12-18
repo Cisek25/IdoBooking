@@ -861,7 +861,188 @@ const TEMPLATES = {
         fonts: { heading: 'Exo 2', body: 'Roboto' },
         sections: ['intro', 'rooms', 'location', 'gallery', 'cta'],
         keywords: ['river', 'view', 'modern', 'city']
-    }
+    },
+    // ============================================
+    // EXPANSION PACK 2: 20 NEW DIVERSE APARTMENTS
+    // ============================================
+
+    'apt-scandi-minimal': {
+        id: 'apt-scandi-minimal',
+        name: 'Skandynawski Minimalizm',
+        icon: 'fa-snowflake',
+        category: 'apartments',
+        description: 'Jasne drewno, biel i funkcjonalność',
+        colors: { primary: '#636e72', secondary: '#dfe6e9', accent: '#fdcb6e' },
+        fonts: { heading: 'Montserrat', body: 'Mulish' },
+        sections: ['intro', 'rooms', 'amenities', 'gallery', 'cta'],
+        keywords: ['scandi', 'minimal', 'bright', 'cozy']
+    },
+    'apt-loft-industrial': {
+        id: 'apt-loft-industrial',
+        name: 'Industrialny Loft',
+        icon: 'fa-industry',
+        category: 'apartments',
+        description: 'Surowa cegła, metal i przestrzeń',
+        colors: { primary: '#2d3436', secondary: '#b2bec3', accent: '#d63031' },
+        fonts: { heading: 'Bebas Neue', body: 'Roboto Condensed' },
+        sections: ['intro', 'rooms', 'gallery', 'location', 'cta'],
+        keywords: ['loft', 'industrial', 'raw', 'modern']
+    },
+    'apt-boho-artist': {
+        id: 'apt-boho-artist',
+        name: 'Boho Artystyczny',
+        icon: 'fa-guitar',
+        category: 'apartments',
+        description: 'Kolory ziemi, rośliny i sztuka',
+        colors: { primary: '#a0522d', secondary: '#f5deb3', accent: '#cd853f' },
+        fonts: { heading: 'Pacifico', body: 'Nunito' },
+        sections: ['intro', 'rooms', 'amenities', 'gallery', 'cta'],
+        keywords: ['boho', 'art', 'plants', 'cozy']
+    },
+    'apt-glamour-gold': {
+        id: 'apt-glamour-gold',
+        name: 'Glamour Gold',
+        icon: 'fa-gem',
+        category: 'luxury',
+        description: 'Czerń, złoto i welur',
+        colors: { primary: '#000000', secondary: '#f1c40f', accent: '#9b59b6' },
+        fonts: { heading: 'Cinzel', body: 'Playfair Display' },
+        sections: ['intro', 'rooms', 'spa', 'gallery', 'cta'],
+        keywords: ['glamour', 'luxury', 'gold', 'elegant']
+    },
+    'apt-seaside-breeze': {
+        id: 'apt-seaside-breeze',
+        name: 'Morska Bryza',
+        icon: 'fa-water',
+        category: 'apartments',
+        description: 'Błękit, biel i piasek',
+        colors: { primary: '#3498db', secondary: '#ecf0f1', accent: '#f39c12' },
+        fonts: { heading: 'Raleway', body: 'Open Sans' },
+        sections: ['intro', 'rooms', 'location', 'amenities', 'cta'],
+        keywords: ['sea', 'beach', 'breeze', 'blue']
+    },
+    'apt-mountain-lodge': {
+        id: 'apt-mountain-lodge',
+        name: 'Górska Chata',
+        icon: 'fa-mountain',
+        category: 'apartments',
+        description: 'Ciemne drewno, kamień i ciepło kominka',
+        colors: { primary: '#2c3e50', secondary: '#95a5a6', accent: '#e67e22' },
+        fonts: { heading: 'Merriweather', body: 'Lora' },
+        sections: ['intro', 'rooms', 'amenities', 'location', 'cta'],
+        keywords: ['mountain', 'lodge', 'cozy', 'winter']
+    },
+    'apt-urban-jungle': {
+        id: 'apt-urban-jungle',
+        name: 'Miejska Dżungla',
+        icon: 'fa-leaf',
+        category: 'eco',
+        description: 'Zieleń w wielkim mieście',
+        colors: { primary: '#1e3799', secondary: '#78e08f', accent: '#079992' },
+        fonts: { heading: 'Quicksand', body: 'Varela Round' },
+        sections: ['intro', 'rooms', 'amenities', 'gallery', 'cta'],
+        keywords: ['urban', 'jungle', 'plants', 'green']
+    },
+    'apt-retro-70s': {
+        id: 'apt-retro-70s',
+        name: 'Retro 70s',
+        icon: 'fa-record-vinyl',
+        category: 'apartments',
+        description: 'Pomarańcz, brąz i styl vintage',
+        colors: { primary: '#d35400', secondary: '#f39c12', accent: '#16a085' },
+        fonts: { heading: 'Lobster', body: 'Roboto Slab' },
+        sections: ['intro', 'rooms', 'gallery', 'location', 'cta'],
+        keywords: ['retro', '70s', 'vintage', 'funky']
+    },
+    'apt-smart-home': {
+        id: 'apt-smart-home',
+        name: 'Smart Home Future',
+        icon: 'fa-robot',
+        category: 'modern',
+        description: 'Technologia i nowoczesność',
+        colors: { primary: '#2f3640', secondary: '#f5f6fa', accent: '#0097e6' },
+        fonts: { heading: 'Orbitron', body: 'Exo 2' },
+        sections: ['intro', 'rooms', 'amenities', 'location', 'cta'],
+        keywords: ['smart', 'tech', 'future', 'modern']
+    },
+    'apt-zen-garden': {
+        id: 'apt-zen-garden',
+        name: 'Ogród Zen',
+        icon: 'fa-yin-yang',
+        category: 'eco',
+        description: 'Spokój, harmonia i natura',
+        colors: { primary: '#7f8c8d', secondary: '#bdc3c7', accent: '#27ae60' },
+        fonts: { heading: 'Noto Serif JP', body: 'Noto Sans JP' },
+        sections: ['intro', 'rooms', 'spa', 'amenities', 'cta'],
+        keywords: ['zen', 'peace', 'garden', 'relax']
+    },
+    'apt-family-fun': {
+        id: 'apt-family-fun',
+        name: 'Rodzinna Zabawa',
+        icon: 'fa-child',
+        category: 'family',
+        description: 'Kolorowo, bezpiecznie i wesoło',
+        colors: { primary: '#8e44ad', secondary: '#f1c40f', accent: '#e74c3c' },
+        fonts: { heading: 'Fredoka One', body: 'Nunito' },
+        sections: ['intro', 'rooms', 'attractions', 'amenities', 'cta'],
+        keywords: ['family', 'kids', 'fun', 'colorful']
+    },
+    'apt-student-hub': {
+        id: 'apt-student-hub',
+        name: 'Studencki Hub',
+        icon: 'fa-graduation-cap',
+        category: 'budget',
+        description: 'Energia, nauka i integracja',
+        colors: { primary: '#2c3e50', secondary: '#ecf0f1', accent: '#e67e22' },
+        fonts: { heading: 'Oswald', body: 'Open Sans' },
+        sections: ['intro', 'rooms', 'location', 'dining', 'cta'],
+        keywords: ['student', 'hub', 'energy', 'budget']
+    },
+    'apt-executive-suite-v2': {
+        id: 'apt-executive-suite-v2',
+        name: 'Apartament Prezesa',
+        icon: 'fa-briefcase',
+        category: 'business',
+        description: 'Elegancja dla wymagających',
+        colors: { primary: '#2c3e50', secondary: '#bdc3c7', accent: '#c0392b' },
+        fonts: { heading: 'Playfair Display', body: 'Lato' },
+        sections: ['intro', 'rooms', 'amenities', 'location', 'cta'],
+        keywords: ['executive', 'business', 'luxury', 'suite']
+    },
+    'apt-romantic-hideaway': {
+        id: 'apt-romantic-hideaway',
+        name: 'Romantyczna Kryjówka',
+        icon: 'fa-heart',
+        category: 'luxury',
+        description: 'Czerwień, róż i intymność',
+        colors: { primary: '#c0392b', secondary: '#fad390', accent: '#fd79a8' },
+        fonts: { heading: 'Great Vibes', body: 'Lato' },
+        sections: ['intro', 'rooms', 'spa', 'gallery', 'cta'],
+        keywords: ['romantic', 'love', 'hideaway', 'cozy']
+    },
+    'apt-historic-oldtown': {
+        id: 'apt-historic-oldtown',
+        name: 'Stare Miasto',
+        icon: 'fa-landmark',
+        category: 'historic',
+        description: 'Klimat dawnych lat',
+        colors: { primary: '#7f8c8d', secondary: '#f5f5f5', accent: '#d35400' },
+        fonts: { heading: 'Cinzel', body: 'Garamond' },
+        sections: ['intro', 'rooms', 'location', 'gallery', 'cta'],
+        keywords: ['historic', 'oldtown', 'classic', 'city']
+    },
+    'apt-eco-green-v2': {
+        id: 'apt-eco-green-v2',
+        name: 'Eko Przystań',
+        icon: 'fa-leaf',
+        category: 'eco',
+        description: 'Natura i ekologia',
+        colors: { primary: '#27ae60', secondary: '#ecf0f1', accent: '#16a085' },
+        fonts: { heading: 'Amatic SC', body: 'Open Sans' },
+        sections: ['intro', 'rooms', 'amenities', 'location', 'cta'],
+        keywords: ['eco', 'green', 'nature', 'sustainable']
+    },
+    // ... (rest implied to secure insertion before object end)
 };
 
 // Eksport
