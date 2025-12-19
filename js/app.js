@@ -2282,6 +2282,14 @@ function updateHeroContent(field, value) {
 
 function updateIntroLayout(layout) {
     appState.introLayout = layout;
+
+    // Update UI buttons
+    document.querySelectorAll('#intro-layout-controls .btn-layout').forEach(btn => {
+        btn.style.background = btn.dataset.layout === layout ? 'var(--primary-color)' : 'var(--surface)';
+        btn.style.borderColor = btn.dataset.layout === layout ? 'var(--primary-color)' : 'var(--border)';
+        btn.style.color = btn.dataset.layout === layout ? '#fff' : 'var(--text-main)';
+    });
+
     console.log(`📐 Updated intro layout:`, layout);
     Preview.debouncedRender();
 }
