@@ -1042,7 +1042,190 @@ const TEMPLATES = {
         sections: ['intro', 'rooms', 'amenities', 'location', 'cta'],
         keywords: ['eco', 'green', 'nature', 'sustainable']
     },
-    // ... (rest implied to secure insertion before object end)
+
+    // ============================================
+    // POLISH CITIES - 10 UNIQUE APARTMENT TEMPLATES
+    // ============================================
+
+    // 1. SOPOT - Nadmorskie Perły
+    'city-sopot-maritime': {
+        id: 'city-sopot-maritime',
+        name: 'Sopot - Nadmorskie Perły',
+        icon: 'fa-umbrella-beach',
+        category: 'apartments-city',
+        city: 'sopot',
+        description: 'Eleganckie apartamenty z widokiem na molo sopockie',
+        colors: { primary: '#0077B6', secondary: '#90E0EF', accent: '#FFB703' },
+        fonts: { heading: 'Cormorant Garamond', body: 'Lato' },
+        sections: ['intro', 'rooms', 'location', 'attractions', 'amenities', 'gallery', 'testimonials', 'cta'],
+        effect: 'sunrays',
+        gradient: 'sopot-sunset',
+        landmarks: ['Molo w Sopocie', 'Monte Cassino', 'Opera Leśna', 'Krzywy Domek'],
+        amenities: ['beach-access', 'balcony', 'bike-rental', 'spa'],
+        keywords: ['sopot', 'morze', 'molo', 'plaża', 'baltic', 'luxury', 'nadmorski']
+    },
+
+    // 2. ZAKOPANE - Góralski Klimat
+    'city-zakopane-highland': {
+        id: 'city-zakopane-highland',
+        name: 'Zakopane - Góralski Klimat',
+        icon: 'fa-mountain',
+        category: 'apartments-city',
+        city: 'zakopane',
+        description: 'Przytulne apartamenty w sercu Tatr z widokiem na Giewont',
+        colors: { primary: '#2D3436', secondary: '#B8860B', accent: '#8B4513' },
+        fonts: { heading: 'Amatic SC', body: 'Nunito' },
+        sections: ['intro', 'rooms', 'location', 'attractions', 'amenities', 'gallery', 'testimonials', 'cta'],
+        effect: 'snow',
+        gradient: 'zakopane-winter',
+        landmarks: ['Krupówki', 'Gubałówka', 'Morskie Oko', 'Dolina Kościeliska'],
+        amenities: ['ski-storage', 'fireplace', 'sauna', 'mountain-view'],
+        keywords: ['zakopane', 'góry', 'tatry', 'narty', 'góralski', 'termy']
+    },
+
+    // 3. KRAKÓW - Starówka Premium
+    'city-krakow-royal': {
+        id: 'city-krakow-royal',
+        name: 'Kraków - Starówka Premium',
+        icon: 'fa-crown',
+        category: 'apartments-city',
+        city: 'krakow',
+        description: 'Królewskie apartamenty w zabytkowej kamienicy przy Rynku',
+        colors: { primary: '#800020', secondary: '#D4AF37', accent: '#2D2D34' },
+        fonts: { heading: 'Playfair Display', body: 'Lora' },
+        sections: ['intro', 'rooms', 'location', 'attractions', 'amenities', 'gallery', 'testimonials', 'cta'],
+        effect: 'particles',
+        gradient: 'krakow-royal',
+        landmarks: ['Wawel', 'Sukiennice', 'Kazimierz', 'Kościół Mariacki'],
+        amenities: ['historic-building', 'city-center', 'concierge', 'airport-transfer'],
+        keywords: ['kraków', 'krakow', 'wawel', 'starówka', 'royal', 'historic', 'kazimierz']
+    },
+
+    // 4. WARSZAWA - Metropolitan Chic
+    'city-warszawa-metro': {
+        id: 'city-warszawa-metro',
+        name: 'Warszawa - Metropolitan Chic',
+        icon: 'fa-city',
+        category: 'apartments-city',
+        city: 'warszawa',
+        description: 'Nowoczesne apartamenty w dynamicznym sercu stolicy',
+        colors: { primary: '#1A1A2E', secondary: '#E63946', accent: '#F1FAEE' },
+        fonts: { heading: 'Montserrat', body: 'Inter' },
+        sections: ['intro', 'rooms', 'location', 'attractions', 'amenities', 'gallery', 'cta'],
+        effect: 'particles',
+        gradient: 'warszawa-metro',
+        landmarks: ['Pałac Kultury', 'Starówka', 'Łazienki Królewskie', 'Wilanów'],
+        amenities: ['smart-home', 'gym', 'underground-parking', 'coworking'],
+        keywords: ['warszawa', 'warsaw', 'stolica', 'biznes', 'modern', 'metropolitan']
+    },
+
+    // 5. GDAŃSK - Hanzeatycki Urok
+    'city-gdansk-hanseatic': {
+        id: 'city-gdansk-hanseatic',
+        name: 'Gdańsk - Hanzeatycki Urok',
+        icon: 'fa-landmark',
+        category: 'apartments-city',
+        city: 'gdansk',
+        description: 'Apartamenty w klimatycznych kamienicach przy Długim Targu',
+        colors: { primary: '#6D4C41', secondary: '#D4A373', accent: '#FFBA08' },
+        fonts: { heading: 'Cinzel', body: 'Source Sans Pro' },
+        sections: ['intro', 'rooms', 'location', 'attractions', 'amenities', 'gallery', 'testimonials', 'cta'],
+        effect: 'fireflies',
+        gradient: 'gdansk-amber',
+        landmarks: ['Długi Targ', 'Żuraw', 'Bazylika Mariacka', 'Oliwa'],
+        amenities: ['historic-building', 'river-view', 'restaurant-nearby', 'amber-shop'],
+        keywords: ['gdańsk', 'gdansk', 'bursztyn', 'amber', 'hanzeatycki', 'hanseatic']
+    },
+
+    // 6. TRÓJMIASTO - Perła Bałtyku
+    'city-trojmiasto-baltic': {
+        id: 'city-trojmiasto-baltic',
+        name: 'Trójmiasto - Perła Bałtyku',
+        icon: 'fa-water',
+        category: 'apartments-city',
+        city: 'trojmiasto',
+        description: 'Luksusowe apartamenty łączące trzy nadmorskie miasta',
+        colors: { primary: '#023E8A', secondary: '#0077B6', accent: '#CAF0F8' },
+        fonts: { heading: 'Raleway', body: 'Open Sans' },
+        sections: ['intro', 'rooms', 'location', 'attractions', 'amenities', 'gallery', 'testimonials', 'cta'],
+        effect: 'drizzle',
+        gradient: 'baltic-dawn',
+        landmarks: ['Molo Sopot', 'Starówka Gdańsk', 'Skwer Kościuszki Gdynia', 'Klif Orłowo'],
+        amenities: ['beach-access', 'bike-rental', 'public-transport', 'marina'],
+        keywords: ['trójmiasto', 'trojmiasto', 'sopot', 'gdańsk', 'gdynia', 'baltic', 'morze']
+    },
+
+    // 7. WROCŁAW - Miasto Mostów
+    'city-wroclaw-bridges': {
+        id: 'city-wroclaw-bridges',
+        name: 'Wrocław - Miasto Mostów',
+        icon: 'fa-bridge',
+        category: 'apartments-city',
+        city: 'wroclaw',
+        description: 'Artystyczne apartamenty na wrocławskich wyspach',
+        colors: { primary: '#1E3A5F', secondary: '#3D5A80', accent: '#98C1D9' },
+        fonts: { heading: 'Quicksand', body: 'Nunito' },
+        sections: ['intro', 'rooms', 'location', 'attractions', 'amenities', 'gallery', 'testimonials', 'cta'],
+        effect: 'fireflies',
+        gradient: 'wroclaw-riverside',
+        landmarks: ['Ostrów Tumski', 'Rynek', 'Hala Stulecia', 'ZOO Wrocław'],
+        amenities: ['river-view', 'bike-rental', 'garden', 'pet-friendly'],
+        keywords: ['wrocław', 'wroclaw', 'krasnale', 'mosty', 'bridges', 'ostrów tumski']
+    },
+
+    // 8. POZNAŃ - Staropolski Szyk
+    'city-poznan-tradition': {
+        id: 'city-poznan-tradition',
+        name: 'Poznań - Staropolski Szyk',
+        icon: 'fa-building-columns',
+        category: 'apartments-city',
+        city: 'poznan',
+        description: 'Eleganckie apartamenty przy poznańskim Starym Rynku',
+        colors: { primary: '#8B4513', secondary: '#DEB887', accent: '#CD853F' },
+        fonts: { heading: 'Merriweather', body: 'Lato' },
+        sections: ['intro', 'rooms', 'location', 'attractions', 'amenities', 'gallery', 'cta'],
+        effect: 'particles',
+        gradient: 'poznan-tradition',
+        landmarks: ['Stary Rynek', 'Koziołki', 'Stary Browar', 'Katedra'],
+        amenities: ['city-center', 'restaurant-nearby', 'business-center', 'parking'],
+        keywords: ['poznań', 'poznan', 'koziołki', 'rogale', 'targi', 'tradition']
+    },
+
+    // 9. KOŁOBRZEG - Uzdrowiskowy Relaks
+    'city-kolobrzeg-spa': {
+        id: 'city-kolobrzeg-spa',
+        name: 'Kołobrzeg - Uzdrowiskowy Relaks',
+        icon: 'fa-spa',
+        category: 'apartments-city',
+        city: 'kolobrzeg',
+        description: 'Apartamenty wellness w najsłynniejszym polskim uzdrowisku',
+        colors: { primary: '#48CAE4', secondary: '#90E0EF', accent: '#00B4D8' },
+        fonts: { heading: 'Great Vibes', body: 'Open Sans' },
+        sections: ['intro', 'rooms', 'location', 'attractions', 'amenities', 'gallery', 'testimonials', 'cta'],
+        effect: 'drizzle',
+        gradient: 'kolobrzeg-spa',
+        landmarks: ['Molo', 'Latarnia Morska', 'Park Zdrojowy', 'Katedra'],
+        amenities: ['spa', 'pool', 'beach-access', 'sauna', 'wellness'],
+        keywords: ['kołobrzeg', 'kolobrzeg', 'uzdrowisko', 'spa', 'wellness', 'plaża', 'morze']
+    },
+
+    // 10. KARPACZ - Karkonoska Ucieczka
+    'city-karpacz-mountains': {
+        id: 'city-karpacz-mountains',
+        name: 'Karpacz - Karkonoska Ucieczka',
+        icon: 'fa-person-hiking',
+        category: 'apartments-city',
+        city: 'karpacz',
+        description: 'Przytulne apartamenty u stóp Śnieżki w Karkonoszach',
+        colors: { primary: '#1B4332', secondary: '#2D6A4F', accent: '#40916C' },
+        fonts: { heading: 'Amatic SC', body: 'Nunito' },
+        sections: ['intro', 'rooms', 'location', 'attractions', 'amenities', 'gallery', 'cta'],
+        effect: 'leaves',
+        gradient: 'karpacz-forest',
+        landmarks: ['Śnieżka', 'Świątynia Wang', 'Wodospad Kamieńczyka', 'Wielki Staw'],
+        amenities: ['mountain-view', 'fireplace', 'ski-storage', 'hiking-trails'],
+        keywords: ['karpacz', 'karkonosze', 'śnieżka', 'góry', 'wang', 'przyroda']
+    }
 };
 
 // Eksport
