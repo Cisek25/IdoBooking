@@ -1213,17 +1213,38 @@ const AboutSectionLayouts = {
 // ============================================
 // GENERATE ABOUT SECTION
 // ============================================
+// ============================================
+// GENERATE ABOUT SECTION
+// ============================================
 function generateAboutSection(variantId, settings) {
-    const variant = ABOUT_SECTION_VARIANTS[variantId];
+    let variant = ABOUT_SECTION_VARIANTS[variantId];
     if (!variant) {
         console.warn('About section variant not found:', variantId);
-        return '';
+        // Fallback to a default if ID not found
+        variant = ABOUT_SECTION_VARIANTS['hotel-elegant'];
+    }
+
+    // clone to avoid mutation
+    variant = { ...variant };
+
+    // 1. Override Layout if global setting exists
+    if (window.appState?.introLayout && window.appState.introLayout !== 'auto') {
+        variant.layout = window.appState.introLayout;
+    }
+
+    // 2. Override Content from App State (Editor)
+    if (window.appState?.sectionContent?.intro) {
+        const custom = window.appState.sectionContent.intro;
+        if (custom.title) variant.title = custom.title;
+        if (custom.subtitle) variant.subtitle = custom.subtitle;
+        if (custom.description) variant.description = custom.description;
     }
 
     const layoutGenerator = AboutSectionLayouts[variant.layout];
     if (!layoutGenerator) {
         console.warn('Layout generator not found:', variant.layout);
-        return '';
+        // Fallback layout
+        return AboutSectionLayouts['split-left-image'](variant, settings);
     }
     return layoutGenerator(variant, settings);
 }

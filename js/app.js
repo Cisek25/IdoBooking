@@ -2280,7 +2280,14 @@ function updateHeroContent(field, value) {
     Preview.debouncedRender();
 }
 
+function updateIntroLayout(layout) {
+    appState.introLayout = layout;
+    console.log(`📐 Updated intro layout:`, layout);
+    Preview.debouncedRender();
+}
+
 window.updateHeroContent = updateHeroContent;
+window.updateIntroLayout = updateIntroLayout;
 
 
 // ============================================
